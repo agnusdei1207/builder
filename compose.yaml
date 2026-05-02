@@ -22,7 +22,7 @@ services:
     ports:
       - "1207:5432"
     volumes:
-      - builder_pgdata:/var/lib/postgresql/data
+      - builder_pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d builder"]
       interval: 5s
