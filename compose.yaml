@@ -1,0 +1,30 @@
+# PostgreSQL 18 + pgvector for Builder
+#
+# Public repository usage:
+#   docker compose -f compose.yaml up -d postgres
+#   export BUILDER_DATABASE_URL="postgres://postgres:postgres@127.0.0.1:1207/builder"
+#   ./builder --help
+#
+# PostgreSQL is the sole storage backend.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: builder-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: builder
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "1207:5432"
+    volumes:
+      - builder_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d builder"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  builder_pgdata:
