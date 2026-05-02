@@ -1,9 +1,12 @@
-# PostgreSQL 18 + pgvector for Builder
+# Builder — Public Compose Configuration
 #
-# Public repository usage:
-#   docker compose -f compose.yaml up -d postgres
-#   export BUILDER_DATABASE_URL="postgres://postgres:postgres@127.0.0.1:1207/builder"
-#   ./builder --help
+# Usage:
+#   docker compose up -d                    # Start PostgreSQL + Builder
+#   docker compose run builder --help       # Run builder with arguments
+#   docker compose run builder              # Interactive mode
+#
+# Mount your project by setting BUILDER_PROJECT_DIR:
+#   BUILDER_PROJECT_DIR=/path/to/project docker compose run builder
 #
 # PostgreSQL is the sole storage backend.
 
@@ -25,6 +28,20 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  builder:
+    image: agnusdei1207/builder:latest
+    container_name: builder-app
+    stdin_open: true
+    tty: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BUILDER_DATABASE_URL: "postgres://postgres:postgres@postgres:5432/builder"
+    volumes:
+      - ${BUILDER_PROJECT_DIR:-.}:/workspace
+    working_dir: /workspace
 
 volumes:
   builder_pgdata:

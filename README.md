@@ -2,42 +2,53 @@
 
 This repository is the public distribution surface for Builder.
 
-It intentionally contains only:
-
-- `README.md`
-- `compose.yaml`
-- published release artifacts
-
-The source code stays in the private upstream repository.
-
 ## Quick start
 
 ```bash
-# Start the local PostgreSQL dependency
-docker compose -f compose.yaml up -d postgres
+# Clone this repo (or just download compose.yaml)
+curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml
 
-# Download the Builder binary from the Releases page for this repository
-# and make it executable. Rename the downloaded asset to `builder` or run it
-# by its downloaded filename.
+# Start PostgreSQL + Builder
+docker compose up -d
 
-export BUILDER_DATABASE_URL="postgres://postgres:postgres@127.0.0.1:1207/builder"
-./builder --help
+# Run builder in your project directory
+BUILDER_PROJECT_DIR=/path/to/your/project docker compose run builder
+
+# Or run with arguments
+docker compose run builder --help
 ```
 
-## Release layout
+## Docker image
 
-The public release should publish the platform binaries under the release assets
-for this repository. The binary names follow the existing release matrix:
+The official Docker image is available on Docker Hub:
 
-- `builder-x86_64-unknown-linux-musl`
-- `builder-aarch64-unknown-linux-musl`
-- `builder-x86_64-unknown-linux-gnu`
-- `builder-aarch64-unknown-linux-gnu`
-- `builder-x86_64-apple-darwin`
-- `builder-aarch64-apple-darwin`
-- `builder-x86_64-pc-windows-msvc.exe`
-- `builder-aarch64-pc-windows-msvc.exe`
-- `builder-aarch64-linux-android`
+```bash
+docker pull agnusdei1207/builder:latest
+```
+
+### Run standalone (without compose)
+
+```bash
+docker run --rm -it \
+  -v "$(pwd):/workspace" \
+  -w /workspace \
+  -e BUILDER_DATABASE_URL="postgres://postgres:postgres@host.docker.internal:1207/builder" \
+  agnusdei1207/builder:latest
+```
+
+## What's included
+
+| Component | Description |
+|---|---|
+| `compose.yaml` | Docker Compose with PostgreSQL + Builder |
+| Docker image | `agnusdei1207/builder:latest` on Docker Hub |
+| GitHub Releases | Platform-specific binaries (when available) |
+
+## Architecture
+
+- **Runtime**: Ubuntu 24.04 minimal (~80 MB image)
+- **Database**: PostgreSQL 18 + pgvector
+- **Volume mount**: Your local project is mounted at `/workspace`
 
 ## What is private
 
