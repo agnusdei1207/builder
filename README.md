@@ -42,7 +42,17 @@ docker run --rm -it \
 |---|---|
 | `compose.yaml` | Docker Compose with PostgreSQL + Builder |
 | Docker image | `agnusdei1207/builder:latest` on Docker Hub |
-| GitHub Releases | Platform-specific binaries (when available) |
+| GitHub Releases | Platform-specific binaries mirrored from the private release pipeline |
+
+## Binary downloads
+
+Platform binaries are published on the public GitHub Releases page:
+
+```bash
+curl -LO https://github.com/agnusdei1207/builder/releases/download/<version>/builder-x86_64-unknown-linux-gnu
+chmod +x builder-x86_64-unknown-linux-gnu
+./builder-x86_64-unknown-linux-gnu --help
+```
 
 ## Architecture
 
