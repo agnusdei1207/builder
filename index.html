@@ -1,873 +1,118 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Builder - Runtime-Owned Coding Agent</title>
-  <meta name="description"
-    content="Builder is a local-first coding agent where the runtime owns routing, tool policy, verification, and completion.">
+  <meta name="description" content="Runtime-owned coding agent CLI.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0"
-    type="image/svg+xml">
-  <style>
-    :root {
-      --brand: #00c8a0;
-      --brand-soft: #66dfca;
-      --brand-dim: rgba(0, 200, 160, 0.1);
-      --brand-border: rgba(0, 200, 160, 0.28);
-      --cyan: #67e8f9;
-      --amber: #fbbf24;
-      --red: #fb7185;
-      --green: #22c55e;
-      --bg: #020605;
-      --bg-deep: #050a09;
-      --surface: #081210;
-      --card: #0d1c18;
-      --term: #020504;
-      --text-hi: #e8fff8;
-      --text-md: #a0cfbf;
-      --text-lo: #537a6c;
-      --border: rgba(0, 200, 160, 0.1);
-      --border-hi: rgba(0, 200, 160, 0.36);
-      --font: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-      --mono: "JetBrains Mono", ui-monospace, monospace;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: var(--font);
-      color: var(--text-hi);
-      background:
-        radial-gradient(circle at 50% -20%, rgba(0, 200, 160, 0.2), transparent 34rem),
-        radial-gradient(circle at 84% 18%, rgba(103, 232, 249, 0.1), transparent 28rem),
-        linear-gradient(180deg, #020402 0%, #050905 54%, #020402 100%);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(0, 200, 160, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 200, 160, 0.055) 1px, transparent 1px);
-      background-size: 56px 56px;
-      mask-image: radial-gradient(ellipse 78% 70% at 50% 0%, black 34%, transparent 100%);
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse at 50% 0%, transparent 0 40%, rgba(2, 4, 2, 0.84) 78%);
-      opacity: 0.8;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .glow-a,
-    .glow-b {
-      position: fixed;
-      z-index: -1;
-      pointer-events: none;
-      filter: blur(88px);
-      opacity: 0.9;
-    }
-
-    .glow-a {
-      top: -12rem;
-      left: -12rem;
-      width: 34rem;
-      height: 34rem;
-      background: radial-gradient(circle, rgba(0, 200, 160, 0.18), transparent 62%);
-    }
-
-    .glow-b {
-      right: -14rem;
-      bottom: 0;
-      width: 36rem;
-      height: 36rem;
-      background: radial-gradient(circle, rgba(103, 232, 249, 0.12), transparent 62%);
-    }
-
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 3.4rem;
-      padding: 0 clamp(1rem, 4vw, 3.5rem);
-      background: rgba(2, 6, 5, 0.82);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(22px) saturate(1.35);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .brand-icon {
-      display: grid;
-      place-items: center;
-      width: 1.55rem;
-      height: 1.55rem;
-      padding: 0.22rem;
-      background:
-        radial-gradient(circle at 35% 25%, rgba(102, 223, 202, 0.8), transparent 45%),
-        rgba(0, 200, 160, 0.14);
-      border-radius: 0.45rem;
-      border: 1px solid var(--brand-border);
-      box-shadow: 0 0 24px rgba(0, 200, 160, 0.42);
-    }
-
-    .brand-icon img,
-    .hero-icon,
-    .footer-icon {
-      display: block;
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 0 12px rgba(0, 200, 160, 0.42));
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--text-md);
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .nav-pill {
-      padding: 0.42rem 0.78rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      transition: all 0.2s var(--ease);
-    }
-
-    .nav-pill:hover {
-      color: var(--brand);
-      border-color: var(--brand-border);
-      background: var(--brand-dim);
-    }
-
-    .hero {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 8rem 1.25rem 4rem;
-      text-align: center;
-    }
-
-    .hero-inner {
-      width: min(100%, 70rem);
-      display: grid;
-      justify-items: center;
-    }
-
-    .hero-orb {
-      position: relative;
-      display: grid;
-      place-items: center;
-      width: clamp(8rem, 16vw, 12rem);
-      height: clamp(8rem, 16vw, 12rem);
-      margin-bottom: 2.4rem;
-    }
-
-    .ring,
-    .pulse {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-    }
-
-    .ring {
-      border: 1px solid var(--brand-border);
-      background:
-        radial-gradient(circle, rgba(0, 200, 160, 0.14), transparent 55%),
-        linear-gradient(135deg, rgba(0, 200, 160, 0.16), rgba(103, 232, 249, 0.05));
-      box-shadow: inset 0 0 36px rgba(0, 200, 160, 0.12), 0 0 56px rgba(0, 200, 160, 0.14);
-    }
-
-    .ring::before {
-      content: "";
-      position: absolute;
-      inset: 1.2rem;
-      border-radius: 50%;
-      border: 1px dashed rgba(0, 200, 160, 0.22);
-      animation: spin 20s linear infinite;
-    }
-
-    .pulse {
-      border: 1px solid rgba(0, 200, 160, 0.22);
-      animation: pulse 3.6s var(--ease) infinite;
-    }
-
-    .pulse:nth-child(2) {
-      animation-delay: 0.7s;
-    }
-
-    .pulse:nth-child(3) {
-      animation-delay: 1.4s;
-    }
-
-    .hero-icon-shell {
-      position: relative;
-      z-index: 2;
-      width: 5.2rem;
-      height: 5.2rem;
-      display: grid;
-      place-items: center;
-      padding: 1rem;
-      border-radius: 1.35rem;
-      background:
-        radial-gradient(circle at 35% 25%, rgba(102, 223, 202, 0.16), transparent 42%),
-        linear-gradient(145deg, rgba(0, 200, 160, 0.14), rgba(2, 6, 5, 0.92));
-      border: 1px solid var(--brand-border);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-        0 0 40px rgba(0, 200, 160, 0.24),
-        0 0 80px rgba(0, 200, 160, 0.12);
-    }
-
-    .hero-icon {
-      width: 3.2rem;
-      height: 3.2rem;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      padding: 0.34rem 0.72rem;
-      border: 1px solid var(--brand-border);
-      border-radius: 999px;
-      color: var(--brand-soft);
-      background: rgba(0, 200, 160, 0.075);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    h1 {
-      max-width: 11ch;
-      font-size: clamp(4.5rem, 13vw, 10.8rem);
-      line-height: 0.82;
-      letter-spacing: -0.09em;
-      font-weight: 800;
-    }
-
-    .grad {
-      color: transparent;
-      background: linear-gradient(120deg, var(--brand) 0%, var(--brand-soft) 52%, var(--cyan) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      filter: drop-shadow(0 0 34px rgba(0, 200, 160, 0.2));
-    }
-
-    .hero-sub {
-      width: min(100%, 45rem);
-      margin: 1.45rem auto 0;
-      color: var(--text-md);
-      font-size: clamp(1.05rem, 2vw, 1.35rem);
-      line-height: 1.55;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.85rem;
-      margin-top: 2.1rem;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 3.15rem;
-      padding: 0 1.25rem;
-      border-radius: 0.95rem;
-      font-size: 0.9rem;
-      font-weight: 800;
-      transition: transform 0.2s var(--ease), border-color 0.2s, background 0.2s;
-    }
-
-    .btn-primary {
-      color: #021002;
-      background: linear-gradient(135deg, var(--brand), var(--brand-soft));
-      box-shadow: 0 0 0 1px rgba(0, 200, 160, 0.26), 0 18px 70px rgba(0, 200, 160, 0.2);
-    }
-
-    .btn-secondary {
-      color: var(--text-hi);
-      background: rgba(7, 16, 7, 0.75);
-      border: 1px solid var(--border-hi);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .perf {
-      width: min(100% - 2rem, 70rem);
-      margin: -4rem auto 5rem;
-      padding: 0.8rem;
-      border: 1px solid var(--border);
-      border-radius: 1.3rem;
-      background: rgba(7, 14, 7, 0.74);
-      backdrop-filter: blur(20px);
-    }
-
-    .perf-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.65rem;
-    }
-
-    .metric {
-      min-height: 6.6rem;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      background: linear-gradient(180deg, rgba(0, 200, 160, 0.075), rgba(2, 6, 5, 0.5));
-    }
-
-    .metric-num {
-      color: var(--brand);
-      font-family: var(--mono);
-      font-size: clamp(1.7rem, 4vw, 2.5rem);
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .metric-label {
-      margin-top: 0.55rem;
-      color: var(--text-lo);
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .section {
-      padding: 4rem 1.25rem;
-    }
-
-    .container {
-      width: min(100%, 70rem);
-      margin: 0 auto;
-    }
-
-    .section-head {
-      max-width: 42rem;
-      margin-bottom: 1.7rem;
-    }
-
-    .section-kicker {
-      color: var(--brand);
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
-
-    .section-title {
-      margin-top: 0.4rem;
-      font-size: clamp(2.2rem, 6vw, 4.6rem);
-      line-height: 0.92;
-      letter-spacing: -0.065em;
-      font-weight: 800;
-    }
-
-    .arch-card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 1.7rem;
-      background:
-        radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(0, 200, 160, 0.16), transparent 16rem),
-        linear-gradient(135deg, rgba(15, 27, 15, 0.96), rgba(4, 9, 4, 0.96));
-      box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
-    }
-
-    .arch-inner {
-      display: grid;
-      grid-template-columns: 0.95fr 1.25fr;
-      gap: 1.2rem;
-      padding: clamp(1rem, 3vw, 1.6rem);
-    }
-
-    .arch-copy {
-      padding: clamp(1rem, 3vw, 2rem);
-    }
-
-    .arch-title {
-      font-size: clamp(1.8rem, 4vw, 3.2rem);
-      line-height: 0.95;
-      letter-spacing: -0.05em;
-      font-weight: 800;
-    }
-
-    .arch-desc {
-      margin-top: 1.1rem;
-      color: var(--text-md);
-      font-size: 1rem;
-    }
-
-    .term {
-      overflow: hidden;
-      min-height: 28rem;
-      border: 1px solid rgba(0, 200, 160, 0.18);
-      border-radius: 1.2rem;
-      background: var(--term);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
-    }
-
-    .term-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 2.4rem;
-      padding: 0 0.85rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0, 200, 160, 0.045);
-    }
-
-    .dots {
-      display: flex;
-      gap: 0.42rem;
-    }
-
-    .dot {
-      width: 0.62rem;
-      height: 0.62rem;
-      border-radius: 999px;
-    }
-
-    .term-tag {
-      color: var(--brand);
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-    }
-
-    .term-body {
-      padding: 1.2rem;
-      font-family: var(--mono);
-      font-size: clamp(0.74rem, 1.4vw, 0.9rem);
-      line-height: 1.8;
-      color: #d8ffd1;
-    }
-
-    .muted {
-      color: #5d7c58;
-    }
-
-    .p {
-      color: var(--brand);
-    }
-
-    .c {
-      color: var(--cyan);
-    }
-
-    .w {
-      color: var(--amber);
-    }
-
-    .s {
-      color: var(--green);
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .card {
-      min-height: 11rem;
-      padding: 1.25rem;
-      border: 1px solid var(--border);
-      border-radius: 1.25rem;
-      background:
-        linear-gradient(180deg, rgba(0, 200, 160, 0.065), transparent),
-        rgba(9, 18, 9, 0.74);
-    }
-
-    .card-title {
-      color: var(--text-hi);
-      font-size: 1.05rem;
-      font-weight: 800;
-    }
-
-    .card-copy {
-      margin-top: 0.6rem;
-      color: var(--text-lo);
-      font-size: 0.92rem;
-      line-height: 1.6;
-    }
-
-    .quick {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    .code {
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 1.2rem;
-      background: rgba(2, 6, 5, 0.88);
-    }
-
-    .code pre {
-      padding: 1.15rem;
-      overflow-x: auto;
-      color: #dcffd7;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      line-height: 1.75;
-    }
-
-    .links {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .link-card {
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      background: rgba(7, 16, 7, 0.7);
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .link-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--brand-border);
-    }
-
-    .link-top {
-      color: var(--text-lo);
-      font-size: 0.7rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .link-val {
-      margin-top: 0.35rem;
-      color: var(--brand-soft);
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      word-break: break-word;
-    }
-
-    footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      width: min(100% - 2rem, 70rem);
-      margin: 3rem auto 0;
-      padding: 2rem 0;
-      color: var(--text-lo);
-      border-top: 1px solid var(--border);
-      font-size: 0.82rem;
-    }
-
-    @keyframes pulse {
-      from {
-        opacity: 0.7;
-        transform: scale(0.74);
-      }
-
-      to {
-        opacity: 0;
-        transform: scale(1.35);
-      }
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media (max-width: 820px) {
-      .nav-links {
-        gap: 0.4rem;
-      }
-
-      .hide-sm {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 6.5rem;
-      }
-
-      .perf-grid,
-      .cards,
-      .quick,
-      .links,
-      .arch-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .perf {
-        margin-top: -2rem;
-      }
-
-      footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" type="image/svg+xml">
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-brand: #39ff14;
+      --color-brand-soft: #77ff55;
+      --color-brand-dim: rgba(57, 255, 20, 0.1);
+      --color-brand-border: rgba(57, 255, 20, 0.28);
+      --color-cyan: #67e8f9;
+      --color-bg: #020605;
+      --color-bg-deep: #050a09;
+      --color-term: #020504;
+      --color-text-hi: #e8fff8;
+      --color-text-md: #a0cfbf;
+      --color-text-lo: #537a6c;
+      --color-bordercolor: rgba(57, 255, 20, 0.1);
+      --color-bordercolor-hi: rgba(57, 255, 20, 0.36);
+      --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
     }
   </style>
 </head>
 
-<body>
-  <div class="glow-a"></div>
-  <div class="glow-b"></div>
+<body class="min-h-screen font-sans text-text-hi bg-bg overflow-x-hidden relative selection:bg-brand/30 selection:text-brand-soft">
+  <!-- Background Layers -->
+  <div class="fixed inset-0 z-[-2] pointer-events-none bg-[length:56px_56px] [mask-image:radial-gradient(ellipse_78%_70%_at_50%_0%,black_34%,transparent_100%)]" style="background-image: linear-gradient(rgba(57, 255, 20, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, 0.055) 1px, transparent 1px);"></div>
+  <div class="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(ellipse_at_50%_0%,transparent_0_40%,rgba(2,4,2,0.84)_78%)] opacity-80"></div>
 
-  <nav class="nav">
-    <a class="brand" href="#top" aria-label="Builder home">
-      <span class="brand-icon">
-        <img src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
+  <nav class="fixed top-0 inset-x-0 z-20 flex items-center justify-between h-[3.4rem] px-4 md:px-14 bg-bg/82 border-b border-bordercolor backdrop-blur-[22px] saturate-[1.35]">
+    <a class="flex items-center gap-2.5 font-extrabold tracking-[-0.03em]" href="#top" aria-label="Builder home">
+      <span class="grid place-items-center w-6 h-6 p-1 bg-[radial-gradient(circle_at_35%_25%,rgba(119,255,85,0.8),transparent_45%),rgba(57,255,20,0.14)] rounded border border-brand-border shadow-[0_0_24px_rgba(57,255,20,0.42)]">
+        <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
       </span>
       <span>builder</span>
     </a>
-    <div class="nav-links">
-      <a class="nav-pill hide-sm" href="#architecture">Architecture</a>
-      <a class="nav-pill hide-sm" href="#quickstart">Quick start</a>
-      <a class="nav-pill" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
+    <div class="flex items-center gap-3 text-text-md text-[0.78rem] font-bold">
+      <a class="px-3 py-1.5 border border-bordercolor rounded-full transition-all duration-200 ease-out hover:text-brand hover:border-brand-border hover:bg-brand-dim" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
     </div>
   </nav>
 
   <main id="top">
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-orb" aria-hidden="true">
-          <div class="pulse"></div>
-          <div class="pulse"></div>
-          <div class="pulse"></div>
-          <div class="ring"></div>
-          <div class="hero-icon-shell">
-            <img class="hero-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt=""
-              aria-hidden="true">
+    <!-- Hero -->
+    <section class="min-h-[85vh] grid place-items-center pt-24 pb-12 px-5 text-center">
+      <div class="w-full max-w-[70rem] flex flex-col items-center">
+        <!-- Simplified Icon Wrapper -->
+        <div class="relative flex items-center justify-center w-24 h-24 md:w-32 md:h-32 mb-8">
+          <div class="absolute inset-0 rounded-full border border-brand-border/40 animate-ping opacity-30" style="animation-duration: 3.6s;"></div>
+          <div class="absolute inset-0 rounded-full border border-brand-border/40 animate-ping opacity-20" style="animation-duration: 3.6s; animation-delay: 1.2s"></div>
+          <div class="relative z-10 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center p-4 rounded-2xl border border-brand-border bg-[radial-gradient(circle_at_35%_25%,rgba(119,255,85,0.16),transparent_42%),linear-gradient(145deg,rgba(57,255,20,0.14),rgba(2,6,5,0.92))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_0_40px_rgba(57,255,20,0.24)]">
+            <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
           </div>
         </div>
-        <div class="eyebrow">runtime-owned agent</div>
-        <h1>Build with <span class="grad">proof</span></h1>
-        <p class="hero-sub">
-          The runtime owns routing, verification, and completion.<br>
-          Model output is a candidate. Evidence closes the task.
+
+        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 border border-brand-border rounded-full text-brand-soft bg-[rgba(57,255,20,0.075)] font-mono text-[0.72rem] font-bold uppercase tracking-[0.12em]">
+          runtime-owned agent
+        </div>
+        <h1 class="max-w-[15ch] text-[clamp(3.5rem,10vw,8rem)] leading-[0.85] tracking-[-0.08em] font-extrabold drop-shadow-[0_0_34px_rgba(57,255,20,0.2)]">
+          Build with <span class="text-transparent bg-clip-text bg-[linear-gradient(120deg,var(--color-brand)_0%,var(--color-brand-soft)_52%,var(--color-cyan)_100%)]">proof</span>
+        </h1>
+        <p class="w-full max-w-[35rem] mt-6 text-text-md text-[clamp(1rem,1.5vw,1.2rem)] leading-[1.55]">
+          A local-first coding agent CLI. The runtime owns routing, verification, and completion.
         </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#quickstart">Get Started</a>
-          <a class="btn btn-secondary" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
-        </div>
       </div>
     </section>
 
-    <section class="perf" aria-label="Builder runtime metrics">
-      <div class="perf-grid">
-        <div class="metric">
-          <div class="metric-num">28</div>
-          <div class="metric-label">Rust crates</div>
-        </div>
-        <div class="metric">
-          <div class="metric-num">5</div>
-          <div class="metric-label">completion gates</div>
-        </div>
-        <div class="metric">
-          <div class="metric-num">6</div>
-          <div class="metric-label">workflow phases</div>
-        </div>
-        <div class="metric">
-          <div class="metric-num">pg18</div>
-          <div class="metric-label">storage plane</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="architecture">
-      <div class="container">
-        <div class="section-head">
-          <div class="section-kicker">architecture</div>
-          <div class="section-title">Runtime before rhetoric.</div>
+    <!-- Quick Start -->
+    <section class="py-12 px-5" id="quickstart">
+      <div class="max-w-[55rem] mx-auto">
+        <div class="mb-6 text-center">
+          <div class="text-[clamp(1.8rem,4vw,3rem)] leading-[0.92] tracking-[-0.05em] font-extrabold">Quick Start</div>
         </div>
 
-        <div class="arch-card">
-          <div class="arch-inner">
-            <div class="arch-copy">
-              <div class="arch-title">Adjudicated, not guessed.</div>
-              <p class="arch-desc">
-                Classify intent → select strategy → enforce policy → gather evidence → accept completion.
-              </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
+            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(57,255,20,0.045)]">
+              <span class="text-brand font-mono text-[0.68rem] font-bold">1. docker compose</span>
             </div>
-            <div class="term">
-              <div class="term-bar">
-                <div class="dots">
-                  <span class="dot" style="background:#ff5f56"></span>
-                  <span class="dot" style="background:#ffbd2e"></span>
-                  <span class="dot" style="background:#27c93f"></span>
-                </div>
-                <span class="term-tag">builder runtime</span>
-              </div>
-              <div class="term-body">
-                <div class="muted">// request enters runtime</div>
-                <div><span class="p">classify</span> TaskShape::Implement</div>
-                <div><span class="c">route  </span> ExecutionStrategy::Task</div>
-                <div><span class="w">policy </span> read + search + write + shell</div>
-                <div><span class="p">phase  </span> discover → plan → execute</div>
-                <div><span class="w">verify </span> evidence collected</div>
-                <div><span class="s">gate[1]</span> objective satisfied</div>
-                <div><span class="s">gate[2]</span> no blocking TODO</div>
-                <div><span class="s">gate[3]</span> checks passed</div>
-                <div><span class="s">done   </span> TASK COMPLETED</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="cards">
-          <div class="card">
-            <div class="card-title">Runtime-owned policy</div>
-            <div class="card-copy">Strategy decides what's safe. Not the model.</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Evidence-first completion</div>
-            <div class="card-copy">Traceable verification bundle. Not a confident paragraph.</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Zero-panic Rust</div>
-            <div class="card-copy">28 crates. PostgreSQL 18 + pgvector. No unwrap.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="quickstart">
-      <div class="container">
-        <div class="section-head">
-          <div class="section-kicker">quick start</div>
-          <div class="section-title">Two ways to run.</div>
-        </div>
-
-        <div class="quick">
-          <div class="code">
-            <div class="term-bar">
-              <div class="dots">
-                <span class="dot" style="background:#ff5f56"></span>
-                <span class="dot" style="background:#ffbd2e"></span>
-                <span class="dot" style="background:#27c93f"></span>
-              </div>
-              <span class="term-tag">docker compose · recommended</span>
-            </div>
-            <pre><code><span class="muted"># PostgreSQL 18 + Builder in one command</span>
+            <pre class="p-5 overflow-x-auto text-[#dcffd7] font-mono text-[0.82rem] leading-[1.75]"><code><span class="text-[#5d7c58]"># PostgreSQL 18 + Builder</span>
 curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml
-docker compose up -d</code></pre>
+docker compose up -d
+
+<span class="text-[#5d7c58]"># Run builder in your project</span>
+BUILDER_PROJECT_DIR=$(pwd) docker compose run builder</code></pre>
           </div>
 
-          <div class="code">
-            <div class="term-bar">
-              <div class="dots">
-                <span class="dot" style="background:#ff5f56"></span>
-                <span class="dot" style="background:#ffbd2e"></span>
-                <span class="dot" style="background:#27c93f"></span>
-              </div>
-              <span class="term-tag">direct install · binary</span>
+          <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
+            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(57,255,20,0.045)]">
+              <span class="text-brand font-mono text-[0.68rem] font-bold">2. direct install</span>
             </div>
-            <pre><code><span class="muted"># Download from GitHub Releases</span>
+            <pre class="p-5 overflow-x-auto text-[#dcffd7] font-mono text-[0.82rem] leading-[1.75]"><code><span class="text-[#5d7c58]"># Download binary</span>
 curl -LO https://github.com/agnusdei1207/builder/releases/latest/download/builder-$(uname -m)-unknown-linux-musl
-chmod +x builder-*
-./builder-*</code></pre>
-          </div>
-        </div>
 
-        <div class="links">
-          <a class="link-card" href="https://github.com/agnusdei1207/builder/releases">
-            <div class="link-top">releases</div>
-            <div class="link-val">Linux · macOS · Windows · Android</div>
-          </a>
-          <a class="link-card" href="https://hub.docker.com/r/agnusdei1207/builder">
-            <div class="link-top">docker</div>
-            <div class="link-val">agnusdei1207/builder:latest</div>
-          </a>
-          <a class="link-card" href="https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml">
-            <div class="link-top">compose</div>
-            <div class="link-val">PG 18 + pgvector + Builder</div>
-          </a>
+chmod +x builder-*
+./builder-* --help</code></pre>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span class="brand-icon" style="width:1.25rem;height:1.25rem;border-radius:0.35rem;">
-        <img class="footer-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt=""
-          aria-hidden="true">
-      </span>
-      <span>builder © 2026</span>
-    </div>
-    <div>Runtime-owned coding agent.</div>
+  <footer class="flex items-center justify-center gap-2 mt-12 mb-12 py-8 text-text-lo text-[0.82rem]">
+    <span class="grid place-items-center w-5 h-5 rounded border border-brand-border/30 bg-brand/10">
+      <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
+    </span>
+    <span>builder &copy; 2026. Runtime-owned coding agent.</span>
   </footer>
-
-  <script>
-    document.querySelectorAll(".arch-card").forEach(function (el) {
-      el.addEventListener("mousemove", function (event) {
-        var rect = el.getBoundingClientRect();
-        el.style.setProperty("--mx", event.clientX - rect.left + "px");
-        el.style.setProperty("--my", event.clientY - rect.top + "px");
-      });
-    });
-  </script>
 </body>
-
 </html>
