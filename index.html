@@ -8,14 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" type="image/svg+xml">
+  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" type="image/svg+xml">
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   <style type="text/tailwindcss">
     @theme {
-      --color-brand: #39ff14;
-      --color-brand-soft: #77ff55;
-      --color-brand-dim: rgba(57, 255, 20, 0.1);
-      --color-brand-border: rgba(57, 255, 20, 0.28);
+      --color-brand: #00c8a0;
+      --color-brand-soft: #66dfca;
+      --color-brand-dim: rgba(0, 200, 160, 0.1);
+      --color-brand-border: rgba(0, 200, 160, 0.28);
       --color-cyan: #67e8f9;
       --color-bg: #020605;
       --color-bg-deep: #050a09;
@@ -23,8 +23,8 @@
       --color-text-hi: #e8fff8;
       --color-text-md: #a0cfbf;
       --color-text-lo: #537a6c;
-      --color-bordercolor: rgba(57, 255, 20, 0.1);
-      --color-bordercolor-hi: rgba(57, 255, 20, 0.36);
+      --color-bordercolor: rgba(0, 200, 160, 0.1);
+      --color-bordercolor-hi: rgba(0, 200, 160, 0.36);
       --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, monospace;
     }
@@ -33,13 +33,17 @@
 
 <body class="min-h-screen font-sans text-text-hi bg-bg overflow-x-hidden relative selection:bg-brand/30 selection:text-brand-soft">
   <!-- Background Layers -->
-  <div class="fixed inset-0 z-[-2] pointer-events-none bg-[length:56px_56px] [mask-image:radial-gradient(ellipse_78%_70%_at_50%_0%,black_34%,transparent_100%)]" style="background-image: linear-gradient(rgba(57, 255, 20, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, 0.055) 1px, transparent 1px);"></div>
+  <div class="fixed inset-0 z-[-2] pointer-events-none bg-[length:56px_56px] [mask-image:radial-gradient(ellipse_78%_70%_at_50%_0%,black_34%,transparent_100%)]" style="background-image: linear-gradient(rgba(0, 200, 160, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 200, 160, 0.055) 1px, transparent 1px);"></div>
   <div class="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(ellipse_at_50%_0%,transparent_0_40%,rgba(2,4,2,0.84)_78%)] opacity-80"></div>
+  <div class="fixed inset-0 z-[-3] pointer-events-none bg-[radial-gradient(circle_at_50%_-20%,rgba(0,200,160,0.2),transparent_34rem),radial-gradient(circle_at_84%_18%,rgba(103,232,249,0.1),transparent_28rem),linear-gradient(180deg,#020402_0%,#050905_54%,#020402_100%)]"></div>
+
+  <!-- Glow orbs -->
+  <div class="fixed top-[-12rem] left-[-12rem] w-[34rem] h-[34rem] bg-[radial-gradient(circle,rgba(0,200,160,0.18),transparent_62%)] blur-[88px] opacity-90 z-[-1] pointer-events-none"></div>
 
   <nav class="fixed top-0 inset-x-0 z-20 flex items-center justify-between h-[3.4rem] px-4 md:px-14 bg-bg/82 border-b border-bordercolor backdrop-blur-[22px] saturate-[1.35]">
     <a class="flex items-center gap-2.5 font-extrabold tracking-[-0.03em]" href="#top" aria-label="Builder home">
-      <span class="grid place-items-center w-6 h-6 p-1 bg-[radial-gradient(circle_at_35%_25%,rgba(119,255,85,0.8),transparent_45%),rgba(57,255,20,0.14)] rounded border border-brand-border shadow-[0_0_24px_rgba(57,255,20,0.42)]">
-        <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
+      <span class="grid place-items-center w-6 h-6 p-1 bg-[radial-gradient(circle_at_35%_25%,rgba(102,223,202,0.8),transparent_45%),rgba(0,200,160,0.14)] rounded border border-brand-border shadow-[0_0_24px_rgba(0,200,160,0.42)]">
+        <img class="w-full h-full drop-shadow-[0_0_12px_rgba(0,200,160,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
       </span>
       <span>builder</span>
     </a>
@@ -56,15 +60,15 @@
         <div class="relative flex items-center justify-center w-24 h-24 md:w-32 md:h-32 mb-8">
           <div class="absolute inset-0 rounded-full border border-brand-border/40 animate-ping opacity-30" style="animation-duration: 3.6s;"></div>
           <div class="absolute inset-0 rounded-full border border-brand-border/40 animate-ping opacity-20" style="animation-duration: 3.6s; animation-delay: 1.2s"></div>
-          <div class="relative z-10 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center p-4 rounded-2xl border border-brand-border bg-[radial-gradient(circle_at_35%_25%,rgba(119,255,85,0.16),transparent_42%),linear-gradient(145deg,rgba(57,255,20,0.14),rgba(2,6,5,0.92))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_0_40px_rgba(57,255,20,0.24)]">
-            <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
+          <div class="relative z-10 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center p-4 rounded-2xl border border-brand-border bg-[radial-gradient(circle_at_35%_25%,rgba(102,223,202,0.16),transparent_42%),linear-gradient(145deg,rgba(0,200,160,0.14),rgba(2,6,5,0.92))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03),0_0_40px_rgba(0,200,160,0.24)]">
+            <img class="w-full h-full drop-shadow-[0_0_12px_rgba(0,200,160,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
           </div>
         </div>
 
-        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 border border-brand-border rounded-full text-brand-soft bg-[rgba(57,255,20,0.075)] font-mono text-[0.72rem] font-bold uppercase tracking-[0.12em]">
+        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 border border-brand-border rounded-full text-brand-soft bg-[rgba(0,200,160,0.075)] font-mono text-[0.72rem] font-bold uppercase tracking-[0.12em]">
           runtime-owned agent
         </div>
-        <h1 class="max-w-[15ch] text-[clamp(3.5rem,10vw,8rem)] leading-[0.85] tracking-[-0.08em] font-extrabold drop-shadow-[0_0_34px_rgba(57,255,20,0.2)]">
+        <h1 class="max-w-[15ch] text-[clamp(3.5rem,10vw,8rem)] leading-[0.85] tracking-[-0.08em] font-extrabold drop-shadow-[0_0_34px_rgba(0,200,160,0.2)]">
           Build with <span class="text-transparent bg-clip-text bg-[linear-gradient(120deg,var(--color-brand)_0%,var(--color-brand-soft)_52%,var(--color-cyan)_100%)]">proof</span>
         </h1>
         <p class="w-full max-w-[35rem] mt-6 text-text-md text-[clamp(1rem,1.5vw,1.2rem)] leading-[1.55]">
@@ -82,7 +86,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
-            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(57,255,20,0.045)]">
+            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(0,200,160,0.045)]">
               <span class="text-brand font-mono text-[0.68rem] font-bold">1. docker compose</span>
             </div>
             <pre class="p-5 overflow-x-auto text-[#dcffd7] font-mono text-[0.82rem] leading-[1.75]"><code><span class="text-[#5d7c58]"># PostgreSQL 18 + Builder</span>
@@ -94,7 +98,7 @@ BUILDER_PROJECT_DIR=$(pwd) docker compose run builder</code></pre>
           </div>
 
           <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
-            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(57,255,20,0.045)]">
+            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(0,200,160,0.045)]">
               <span class="text-brand font-mono text-[0.68rem] font-bold">2. direct install</span>
             </div>
             <pre class="p-5 overflow-x-auto text-[#dcffd7] font-mono text-[0.82rem] leading-[1.75]"><code><span class="text-[#5d7c58]"># Download binary</span>
@@ -110,7 +114,7 @@ chmod +x builder-*
 
   <footer class="flex items-center justify-center gap-2 mt-12 mb-12 py-8 text-text-lo text-[0.82rem]">
     <span class="grid place-items-center w-5 h-5 rounded border border-brand-border/30 bg-brand/10">
-      <img class="w-full h-full drop-shadow-[0_0_12px_rgba(57,255,20,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14" alt="" aria-hidden="true">
+      <img class="w-full h-full drop-shadow-[0_0_12px_rgba(0,200,160,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
     </span>
     <span>builder &copy; 2026. Runtime-owned coding agent.</span>
   </footer>
