@@ -12,28 +12,27 @@
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14"
-    type="image/svg+xml">
+  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2367e8f9" type="image/svg+xml">
   <style>
     :root {
-      --brand: #39ff14;
-      --brand-soft: #b6ff9e;
-      --brand-dim: rgba(57, 255, 20, 0.1);
-      --brand-border: rgba(57, 255, 20, 0.28);
+      --brand: #67e8f9;
+      --brand-soft: #a5f3fc;
+      --brand-dim: rgba(103, 232, 249, 0.1);
+      --brand-border: rgba(103, 232, 249, 0.28);
       --cyan: #67e8f9;
       --amber: #fbbf24;
       --red: #fb7185;
       --green: #22c55e;
-      --bg: #020402;
-      --bg-deep: #050905;
-      --surface: #0a120a;
-      --card: #0f1b0f;
-      --term: #020602;
-      --text-hi: #f3ffe9;
-      --text-md: #b8d6ae;
-      --text-lo: #688460;
-      --border: rgba(182, 255, 158, 0.1);
-      --border-hi: rgba(57, 255, 20, 0.36);
+      --bg: #060502;
+      --bg-deep: #0a0905;
+      --surface: #11100a;
+      --card: #18160e;
+      --term: #030301;
+      --text-hi: #fffdf5;
+      --text-md: #d4cfb0;
+      --text-lo: #7a765a;
+      --border: rgba(165, 243, 252, 0.1);
+      --border-hi: rgba(103, 232, 249, 0.36);
       --font: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
       --mono: "JetBrains Mono", ui-monospace, monospace;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -55,9 +54,9 @@
       font-family: var(--font);
       color: var(--text-hi);
       background:
-        radial-gradient(circle at 50% -20%, rgba(57, 255, 20, 0.2), transparent 34rem),
+        radial-gradient(circle at 50% -20%, rgba(103, 232, 249, 0.2), transparent 34rem),
         radial-gradient(circle at 84% 18%, rgba(103, 232, 249, 0.1), transparent 28rem),
-        linear-gradient(180deg, #020402 0%, #050905 54%, #020402 100%);
+        linear-gradient(180deg, #060502 0%, #0a0905 54%, #060502 100%);
       overflow-x: hidden;
     }
 
@@ -68,8 +67,8 @@
       z-index: -2;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(57, 255, 20, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(57, 255, 20, 0.055) 1px, transparent 1px);
+        linear-gradient(rgba(103, 232, 249, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(103, 232, 249, 0.055) 1px, transparent 1px);
       background-size: 56px 56px;
       mask-image: radial-gradient(ellipse 78% 70% at 50% 0%, black 34%, transparent 100%);
     }
@@ -81,8 +80,7 @@
       z-index: -1;
       pointer-events: none;
       background:
-        linear-gradient(90deg, transparent 49.8%, rgba(57, 255, 20, 0.06) 50%, transparent 50.2%),
-        radial-gradient(ellipse at 50% 0%, transparent 0 40%, rgba(2, 4, 2, 0.84) 78%);
+        radial-gradient(ellipse at 50% 0%, transparent 0 40%, rgba(6, 5, 2, 0.84) 78%);
       opacity: 0.8;
     }
 
@@ -105,7 +103,7 @@
       left: -12rem;
       width: 34rem;
       height: 34rem;
-      background: radial-gradient(circle, rgba(57, 255, 20, 0.18), transparent 62%);
+      background: radial-gradient(circle, rgba(103, 232, 249, 0.18), transparent 62%);
     }
 
     .glow-b {
@@ -127,7 +125,7 @@
       justify-content: space-between;
       height: 3.4rem;
       padding: 0 clamp(1rem, 4vw, 3.5rem);
-      background: rgba(2, 6, 2, 0.82);
+      background: rgba(6, 5, 2, 0.82);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(22px) saturate(1.35);
     }
@@ -147,11 +145,11 @@
       height: 1.55rem;
       padding: 0.22rem;
       background:
-        radial-gradient(circle at 35% 25%, rgba(182, 255, 158, 0.8), transparent 45%),
-        rgba(57, 255, 20, 0.14);
+        radial-gradient(circle at 35% 25%, rgba(165, 243, 252, 0.8), transparent 45%),
+        rgba(103, 232, 249, 0.14);
       border-radius: 0.45rem;
       border: 1px solid var(--brand-border);
-      box-shadow: 0 0 24px rgba(57, 255, 20, 0.42);
+      box-shadow: 0 0 24px rgba(103, 232, 249, 0.42);
     }
 
     .brand-icon img,
@@ -160,16 +158,7 @@
       display: block;
       width: 100%;
       height: 100%;
-      filter:
-        brightness(0)
-        saturate(100%)
-        invert(78%)
-        sepia(94%)
-        saturate(1152%)
-        hue-rotate(48deg)
-        brightness(104%)
-        contrast(111%)
-        drop-shadow(0 0 12px rgba(57, 255, 20, 0.42));
+      filter: drop-shadow(0 0 12px rgba(103, 232, 249, 0.42));
     }
 
     .nav-links {
@@ -227,9 +216,9 @@
     .ring {
       border: 1px solid var(--brand-border);
       background:
-        radial-gradient(circle, rgba(57, 255, 20, 0.14), transparent 55%),
-        linear-gradient(135deg, rgba(57, 255, 20, 0.16), rgba(103, 232, 249, 0.05));
-      box-shadow: inset 0 0 36px rgba(57, 255, 20, 0.12), 0 0 56px rgba(57, 255, 20, 0.14);
+        radial-gradient(circle, rgba(103, 232, 249, 0.14), transparent 55%),
+        linear-gradient(135deg, rgba(103, 232, 249, 0.16), rgba(103, 232, 249, 0.05));
+      box-shadow: inset 0 0 36px rgba(103, 232, 249, 0.12), 0 0 56px rgba(103, 232, 249, 0.14);
     }
 
     .ring::before {
@@ -237,12 +226,12 @@
       position: absolute;
       inset: 1.2rem;
       border-radius: 50%;
-      border: 1px dashed rgba(57, 255, 20, 0.22);
+      border: 1px dashed rgba(103, 232, 249, 0.22);
       animation: spin 20s linear infinite;
     }
 
     .pulse {
-      border: 1px solid rgba(57, 255, 20, 0.22);
+      border: 1px solid rgba(103, 232, 249, 0.22);
       animation: pulse 3.6s var(--ease) infinite;
     }
 
@@ -264,13 +253,13 @@
       padding: 1rem;
       border-radius: 1.35rem;
       background:
-        radial-gradient(circle at 35% 25%, rgba(182, 255, 158, 0.16), transparent 42%),
-        linear-gradient(145deg, rgba(57, 255, 20, 0.14), rgba(2, 6, 2, 0.92));
+        radial-gradient(circle at 35% 25%, rgba(165, 243, 252, 0.16), transparent 42%),
+        linear-gradient(145deg, rgba(103, 232, 249, 0.14), rgba(6, 5, 2, 0.92));
       border: 1px solid var(--brand-border);
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-        0 0 40px rgba(57, 255, 20, 0.24),
-        0 0 80px rgba(57, 255, 20, 0.12);
+        0 0 40px rgba(103, 232, 249, 0.24),
+        0 0 80px rgba(103, 232, 249, 0.12);
     }
 
     .hero-icon {
@@ -287,7 +276,7 @@
       border: 1px solid var(--brand-border);
       border-radius: 999px;
       color: var(--brand-soft);
-      background: rgba(57, 255, 20, 0.075);
+      background: rgba(103, 232, 249, 0.075);
       font-family: var(--mono);
       font-size: 0.72rem;
       font-weight: 700;
@@ -308,7 +297,7 @@
       background: linear-gradient(120deg, var(--brand) 0%, var(--brand-soft) 52%, var(--cyan) 100%);
       -webkit-background-clip: text;
       background-clip: text;
-      filter: drop-shadow(0 0 34px rgba(57, 255, 20, 0.2));
+      filter: drop-shadow(0 0 34px rgba(103, 232, 249, 0.2));
     }
 
     .hero-sub {
@@ -342,12 +331,12 @@
     .btn-primary {
       color: #021002;
       background: linear-gradient(135deg, var(--brand), var(--brand-soft));
-      box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.26), 0 18px 70px rgba(57, 255, 20, 0.2);
+      box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.26), 0 18px 70px rgba(103, 232, 249, 0.2);
     }
 
     .btn-secondary {
       color: var(--text-hi);
-      background: rgba(7, 16, 7, 0.75);
+      background: rgba(17, 16, 10, 0.75);
       border: 1px solid var(--border-hi);
     }
 
@@ -361,7 +350,7 @@
       padding: 0.8rem;
       border: 1px solid var(--border);
       border-radius: 1.3rem;
-      background: rgba(7, 14, 7, 0.74);
+      background: rgba(17, 16, 10, 0.74);
       backdrop-filter: blur(20px);
     }
 
@@ -376,7 +365,7 @@
       padding: 1rem;
       border: 1px solid var(--border);
       border-radius: 1rem;
-      background: linear-gradient(180deg, rgba(57, 255, 20, 0.075), rgba(2, 6, 2, 0.5));
+      background: linear-gradient(180deg, rgba(103, 232, 249, 0.075), rgba(6, 5, 2, 0.5));
     }
 
     .metric-num {
@@ -433,8 +422,8 @@
       border: 1px solid var(--border);
       border-radius: 1.7rem;
       background:
-        radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(57, 255, 20, 0.16), transparent 16rem),
-        linear-gradient(135deg, rgba(15, 27, 15, 0.96), rgba(4, 9, 4, 0.96));
+        radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(103, 232, 249, 0.16), transparent 16rem),
+        linear-gradient(135deg, rgba(24, 22, 14, 0.96), rgba(10, 9, 5, 0.96));
       box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
     }
 
@@ -465,7 +454,7 @@
     .term {
       overflow: hidden;
       min-height: 28rem;
-      border: 1px solid rgba(57, 255, 20, 0.18);
+      border: 1px solid rgba(103, 232, 249, 0.18);
       border-radius: 1.2rem;
       background: var(--term);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
@@ -478,7 +467,7 @@
       height: 2.4rem;
       padding: 0 0.85rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(57, 255, 20, 0.045);
+      background: rgba(103, 232, 249, 0.045);
     }
 
     .dots {
@@ -504,11 +493,11 @@
       font-family: var(--mono);
       font-size: clamp(0.74rem, 1.4vw, 0.9rem);
       line-height: 1.8;
-      color: #d8ffd1;
+      color: #e2e8f0;
     }
 
     .muted {
-      color: #5d7c58;
+      color: #454230;
     }
 
     .p {
@@ -540,8 +529,8 @@
       border: 1px solid var(--border);
       border-radius: 1.25rem;
       background:
-        linear-gradient(180deg, rgba(57, 255, 20, 0.065), transparent),
-        rgba(9, 18, 9, 0.74);
+        linear-gradient(180deg, rgba(103, 232, 249, 0.065), transparent),
+        rgba(24, 22, 14, 0.74);
     }
 
     .card-title {
@@ -568,13 +557,13 @@
       overflow: hidden;
       border: 1px solid var(--border);
       border-radius: 1.2rem;
-      background: rgba(2, 6, 2, 0.88);
+      background: rgba(6, 5, 2, 0.88);
     }
 
     .code pre {
       padding: 1.15rem;
       overflow-x: auto;
-      color: #dcffd7;
+      color: #e2e8f0;
       font-family: var(--mono);
       font-size: 0.82rem;
       line-height: 1.75;
@@ -591,7 +580,7 @@
       padding: 1rem;
       border: 1px solid var(--border);
       border-radius: 1rem;
-      background: rgba(7, 16, 7, 0.7);
+      background: rgba(17, 16, 10, 0.7);
       transition: border-color 0.2s, transform 0.2s;
     }
 
@@ -687,7 +676,7 @@
   <nav class="nav">
     <a class="brand" href="#top" aria-label="Builder home">
       <span class="brand-icon">
-        <img src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt="" aria-hidden="true">
+        <img src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2367e8f9" alt="" aria-hidden="true">
       </span>
       <span>builder</span>
     </a>
@@ -707,7 +696,7 @@
           <div class="pulse"></div>
           <div class="ring"></div>
           <div class="hero-icon-shell">
-            <img class="hero-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt=""
+            <img class="hero-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2367e8f9" alt=""
               aria-hidden="true">
           </div>
         </div>
@@ -868,7 +857,7 @@ docker run --rm -it \
   <footer>
     <div style="display:flex;align-items:center;gap:0.5rem;">
       <span class="brand-icon" style="width:1.25rem;height:1.25rem;border-radius:0.35rem;">
-        <img class="footer-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt=""
+        <img class="footer-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2367e8f9" alt=""
           aria-hidden="true">
       </span>
       <span>builder © 2026</span>
