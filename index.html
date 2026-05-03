@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Builder - Runtime-Owned Coding Agent</title>
+  <meta name="description"
+    content="Builder is a local-first coding agent where the runtime owns routing, tool policy, verification, and completion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --brand: #39ff14;
+      --brand-soft: #b6ff9e;
+      --brand-dim: rgba(57, 255, 20, 0.1);
+      --brand-border: rgba(57, 255, 20, 0.28);
+      --cyan: #67e8f9;
+      --amber: #fbbf24;
+      --red: #fb7185;
+      --green: #22c55e;
+      --bg: #020402;
+      --bg-deep: #050905;
+      --surface: #0a120a;
+      --card: #0f1b0f;
+      --term: #020602;
+      --text-hi: #f3ffe9;
+      --text-md: #b8d6ae;
+      --text-lo: #688460;
+      --border: rgba(182, 255, 158, 0.1);
+      --border-hi: rgba(57, 255, 20, 0.36);
+      --font: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text-hi);
+      background:
+        radial-gradient(circle at 50% -20%, rgba(57, 255, 20, 0.2), transparent 34rem),
+        radial-gradient(circle at 84% 18%, rgba(103, 232, 249, 0.1), transparent 28rem),
+        linear-gradient(180deg, #020402 0%, #050905 54%, #020402 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(57, 255, 20, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57, 255, 20, 0.055) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 78% 70% at 50% 0%, black 34%, transparent 100%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 49.8%, rgba(57, 255, 20, 0.06) 50%, transparent 50.2%),
+        radial-gradient(ellipse at 50% 0%, transparent 0 40%, rgba(2, 4, 2, 0.84) 78%);
+      opacity: 0.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .glow-a,
+    .glow-b {
+      position: fixed;
+      z-index: -1;
+      pointer-events: none;
+      filter: blur(88px);
+      opacity: 0.9;
+    }
+
+    .glow-a {
+      top: -12rem;
+      left: -12rem;
+      width: 34rem;
+      height: 34rem;
+      background: radial-gradient(circle, rgba(57, 255, 20, 0.18), transparent 62%);
+    }
+
+    .glow-b {
+      right: -14rem;
+      bottom: 0;
+      width: 36rem;
+      height: 36rem;
+      background: radial-gradient(circle, rgba(103, 232, 249, 0.12), transparent 62%);
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 3.4rem;
+      padding: 0 clamp(1rem, 4vw, 3.5rem);
+      background: rgba(2, 6, 2, 0.82);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(22px) saturate(1.35);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 1.55rem;
+      height: 1.55rem;
+      color: #021002;
+      background: var(--brand);
+      border-radius: 0.45rem;
+      box-shadow: 0 0 24px rgba(57, 255, 20, 0.42);
+      font-family: var(--mono);
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-md);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .nav-pill {
+      padding: 0.42rem 0.78rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: all 0.2s var(--ease);
+    }
+
+    .nav-pill:hover {
+      color: var(--brand);
+      border-color: var(--brand-border);
+      background: var(--brand-dim);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 8rem 1.25rem 4rem;
+      text-align: center;
+    }
+
+    .hero-inner {
+      width: min(100%, 70rem);
+      display: grid;
+      justify-items: center;
+    }
+
+    .hero-orb {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: clamp(8rem, 16vw, 12rem);
+      height: clamp(8rem, 16vw, 12rem);
+      margin-bottom: 2.4rem;
+    }
+
+    .ring,
+    .pulse {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .ring {
+      border: 1px solid var(--brand-border);
+      background:
+        radial-gradient(circle, rgba(57, 255, 20, 0.14), transparent 55%),
+        linear-gradient(135deg, rgba(57, 255, 20, 0.16), rgba(103, 232, 249, 0.05));
+      box-shadow: inset 0 0 36px rgba(57, 255, 20, 0.12), 0 0 56px rgba(57, 255, 20, 0.14);
+    }
+
+    .ring::before {
+      content: "";
+      position: absolute;
+      inset: 1.2rem;
+      border-radius: 50%;
+      border: 1px dashed rgba(57, 255, 20, 0.22);
+      animation: spin 20s linear infinite;
+    }
+
+    .pulse {
+      border: 1px solid rgba(57, 255, 20, 0.22);
+      animation: pulse 3.6s var(--ease) infinite;
+    }
+
+    .pulse:nth-child(2) {
+      animation-delay: 0.7s;
+    }
+
+    .pulse:nth-child(3) {
+      animation-delay: 1.4s;
+    }
+
+    .terminal-mark {
+      position: relative;
+      z-index: 2;
+      width: 5.2rem;
+      height: 5.2rem;
+      display: grid;
+      place-items: center;
+      border-radius: 1.35rem;
+      background: #071007;
+      border: 1px solid var(--brand-border);
+      box-shadow: 0 0 40px rgba(57, 255, 20, 0.24);
+      color: var(--brand);
+      font-family: var(--mono);
+      font-size: 2.3rem;
+      font-weight: 800;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.34rem 0.72rem;
+      border: 1px solid var(--brand-border);
+      border-radius: 999px;
+      color: var(--brand-soft);
+      background: rgba(57, 255, 20, 0.075);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      max-width: 11ch;
+      font-size: clamp(4.5rem, 13vw, 10.8rem);
+      line-height: 0.82;
+      letter-spacing: -0.09em;
+      font-weight: 800;
+    }
+
+    .grad {
+      color: transparent;
+      background: linear-gradient(120deg, var(--brand) 0%, var(--brand-soft) 52%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 34px rgba(57, 255, 20, 0.2));
+    }
+
+    .hero-sub {
+      width: min(100%, 45rem);
+      margin: 1.45rem auto 0;
+      color: var(--text-md);
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      line-height: 1.55;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.85rem;
+      margin-top: 2.1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3.15rem;
+      padding: 0 1.25rem;
+      border-radius: 0.95rem;
+      font-size: 0.9rem;
+      font-weight: 800;
+      transition: transform 0.2s var(--ease), border-color 0.2s, background 0.2s;
+    }
+
+    .btn-primary {
+      color: #021002;
+      background: linear-gradient(135deg, var(--brand), var(--brand-soft));
+      box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.26), 0 18px 70px rgba(57, 255, 20, 0.2);
+    }
+
+    .btn-secondary {
+      color: var(--text-hi);
+      background: rgba(7, 16, 7, 0.75);
+      border: 1px solid var(--border-hi);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .perf {
+      width: min(100% - 2rem, 70rem);
+      margin: -4rem auto 5rem;
+      padding: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 1.3rem;
+      background: rgba(7, 14, 7, 0.74);
+      backdrop-filter: blur(20px);
+    }
+
+    .perf-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+    }
+
+    .metric {
+      min-height: 6.6rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(57, 255, 20, 0.075), rgba(2, 6, 2, 0.5));
+    }
+
+    .metric-num {
+      color: var(--brand);
+      font-family: var(--mono);
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .metric-label {
+      margin-top: 0.55rem;
+      color: var(--text-lo);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .section {
+      padding: 4rem 1.25rem;
+    }
+
+    .container {
+      width: min(100%, 70rem);
+      margin: 0 auto;
+    }
+
+    .section-head {
+      max-width: 42rem;
+      margin-bottom: 1.7rem;
+    }
+
+    .section-kicker {
+      color: var(--brand);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .section-title {
+      margin-top: 0.4rem;
+      font-size: clamp(2.2rem, 6vw, 4.6rem);
+      line-height: 0.92;
+      letter-spacing: -0.065em;
+      font-weight: 800;
+    }
+
+    .arch-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 1.7rem;
+      background:
+        radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(57, 255, 20, 0.16), transparent 16rem),
+        linear-gradient(135deg, rgba(15, 27, 15, 0.96), rgba(4, 9, 4, 0.96));
+      box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
+    }
+
+    .arch-inner {
+      display: grid;
+      grid-template-columns: 0.95fr 1.25fr;
+      gap: 1.2rem;
+      padding: clamp(1rem, 3vw, 1.6rem);
+    }
+
+    .arch-copy {
+      padding: clamp(1rem, 3vw, 2rem);
+    }
+
+    .arch-title {
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .arch-desc {
+      margin-top: 1.1rem;
+      color: var(--text-md);
+      font-size: 1rem;
+    }
+
+    .term {
+      overflow: hidden;
+      min-height: 28rem;
+      border: 1px solid rgba(57, 255, 20, 0.18);
+      border-radius: 1.2rem;
+      background: var(--term);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+    }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 2.4rem;
+      padding: 0 0.85rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(57, 255, 20, 0.045);
+    }
+
+    .dots {
+      display: flex;
+      gap: 0.42rem;
+    }
+
+    .dot {
+      width: 0.62rem;
+      height: 0.62rem;
+      border-radius: 999px;
+    }
+
+    .term-tag {
+      color: var(--brand);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .term-body {
+      padding: 1.2rem;
+      font-family: var(--mono);
+      font-size: clamp(0.74rem, 1.4vw, 0.9rem);
+      line-height: 1.8;
+      color: #d8ffd1;
+    }
+
+    .muted {
+      color: #5d7c58;
+    }
+
+    .p {
+      color: var(--brand);
+    }
+
+    .c {
+      color: var(--cyan);
+    }
+
+    .w {
+      color: var(--amber);
+    }
+
+    .s {
+      color: var(--green);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      min-height: 11rem;
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(180deg, rgba(57, 255, 20, 0.065), transparent),
+        rgba(9, 18, 9, 0.74);
+    }
+
+    .card-title {
+      color: var(--text-hi);
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .card-copy {
+      margin-top: 0.6rem;
+      color: var(--text-lo);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .quick {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .code {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 1.2rem;
+      background: rgba(2, 6, 2, 0.88);
+    }
+
+    .code pre {
+      padding: 1.15rem;
+      overflow-x: auto;
+      color: #dcffd7;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.75;
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .link-card {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      background: rgba(7, 16, 7, 0.7);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .link-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand-border);
+    }
+
+    .link-top {
+      color: var(--text-lo);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .link-val {
+      margin-top: 0.35rem;
+      color: var(--brand-soft);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      word-break: break-word;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      width: min(100% - 2rem, 70rem);
+      margin: 3rem auto 0;
+      padding: 2rem 0;
+      color: var(--text-lo);
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 0.7;
+        transform: scale(0.74);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(1.35);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .nav-links {
+        gap: 0.4rem;
+      }
+
+      .hide-sm {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 6.5rem;
+      }
+
+      .perf-grid,
+      .cards,
+      .quick,
+      .links,
+      .arch-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .perf {
+        margin-top: -2rem;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glow-a"></div>
+  <div class="glow-b"></div>
+
+  <nav class="nav">
+    <a class="brand" href="#top" aria-label="Builder home">
+      <span class="brand-mark">&gt;_</span>
+      <span>builder</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-pill hide-sm" href="#architecture">Architecture</a>
+      <a class="nav-pill hide-sm" href="#quickstart">Quick start</a>
+      <a class="nav-pill" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-orb" aria-hidden="true">
+          <div class="pulse"></div>
+          <div class="pulse"></div>
+          <div class="pulse"></div>
+          <div class="ring"></div>
+          <div class="terminal-mark">$</div>
+        </div>
+        <div class="eyebrow">runtime-owned agent</div>
+        <h1>Build with <span class="grad">proof</span></h1>
+        <p class="hero-sub">
+          Builder is a local-first coding agent where the runtime owns routing, tool policy,
+          verification, and completion. Model output is a candidate. Evidence closes the task.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/agnusdei1207/builder/releases">Download binaries</a>
+          <a class="btn btn-secondary" href="#quickstart">Run with Docker</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="perf" aria-label="Builder runtime metrics">
+      <div class="perf-grid">
+        <div class="metric">
+          <div class="metric-num">28</div>
+          <div class="metric-label">Rust crates</div>
+        </div>
+        <div class="metric">
+          <div class="metric-num">5</div>
+          <div class="metric-label">completion gates</div>
+        </div>
+        <div class="metric">
+          <div class="metric-num">6</div>
+          <div class="metric-label">workflow phases</div>
+        </div>
+        <div class="metric">
+          <div class="metric-num">pg18</div>
+          <div class="metric-label">storage plane</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">architecture</div>
+          <div class="section-title">Runtime before rhetoric.</div>
+        </div>
+
+        <div class="arch-card">
+          <div class="arch-inner">
+            <div class="arch-copy">
+              <div class="arch-title">Completion is adjudicated, not guessed.</div>
+              <p class="arch-desc">
+                Builder classifies intent, selects an execution strategy, enforces tool policy,
+                gathers evidence, and only then accepts completion.
+              </p>
+              <p class="arch-desc">
+                The public repo ships the distribution shell. The private repo builds the binaries
+                and mirrors release assets here.
+              </p>
+            </div>
+            <div class="term">
+              <div class="term-bar">
+                <div class="dots">
+                  <span class="dot" style="background:#ff5f56"></span>
+                  <span class="dot" style="background:#ffbd2e"></span>
+                  <span class="dot" style="background:#27c93f"></span>
+                </div>
+                <span class="term-tag">builder runtime</span>
+              </div>
+              <div class="term-body">
+                <div class="muted">// user request enters runtime</div>
+                <div><span class="p">classify</span> TaskShape::Implement</div>
+                <div><span class="c">route</span> ExecutionStrategy::Task</div>
+                <div><span class="w">policy</span> read + search + write + shell</div>
+                <div><span class="p">phase</span> discover -> plan -> execute</div>
+                <div><span class="c">tools</span> gated command execution</div>
+                <div><span class="w">verify</span> evidence bundle collected</div>
+                <div><span class="s">gate[1]</span> objective satisfied</div>
+                <div><span class="s">gate[2]</span> no blocking TODO remains</div>
+                <div><span class="s">gate[3]</span> tests or checks passed</div>
+                <div><span class="s">complete</span> TASK COMPLETED</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="card-title">Tool policy owned by runtime</div>
+            <div class="card-copy">The model does not decide what is safe to execute. Strategy and policy do.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Evidence-first completion</div>
+            <div class="card-copy">Completion requires a traceable verification bundle, not a confident paragraph.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Public shell, private source</div>
+            <div class="card-copy">This public project exposes docs, compose, Docker image, and release binaries.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="quickstart">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">quick start</div>
+          <div class="section-title">Run it in your workspace.</div>
+        </div>
+
+        <div class="quick">
+          <div class="code">
+            <div class="term-bar">
+              <div class="dots">
+                <span class="dot" style="background:#ff5f56"></span>
+                <span class="dot" style="background:#ffbd2e"></span>
+                <span class="dot" style="background:#27c93f"></span>
+              </div>
+              <span class="term-tag">compose</span>
+            </div>
+            <pre><code>curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml
+docker compose up -d
+BUILDER_PROJECT_DIR=/path/to/project docker compose run builder</code></pre>
+          </div>
+
+          <div class="code">
+            <div class="term-bar">
+              <div class="dots">
+                <span class="dot" style="background:#ff5f56"></span>
+                <span class="dot" style="background:#ffbd2e"></span>
+                <span class="dot" style="background:#27c93f"></span>
+              </div>
+              <span class="term-tag">docker</span>
+            </div>
+            <pre><code>docker pull agnusdei1207/builder:latest
+docker run --rm -it \
+  -v "$(pwd):/workspace" \
+  -w /workspace \
+  agnusdei1207/builder:latest</code></pre>
+          </div>
+        </div>
+
+        <div class="links">
+          <a class="link-card" href="https://github.com/agnusdei1207/builder/releases">
+            <div class="link-top">release assets</div>
+            <div class="link-val">github.com/agnusdei1207/builder/releases</div>
+          </a>
+          <a class="link-card" href="https://hub.docker.com/r/agnusdei1207/builder">
+            <div class="link-top">docker image</div>
+            <div class="link-val">agnusdei1207/builder:latest</div>
+          </a>
+          <a class="link-card" href="https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml">
+            <div class="link-top">compose</div>
+            <div class="link-val">PostgreSQL 18 + Builder</div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>builder © 2026</div>
+    <div>Runtime-owned coding agent. Public distribution surface.</div>
+  </footer>
+
+  <script>
+    document.querySelectorAll(".arch-card").forEach(function (el) {
+      el.addEventListener("mousemove", function (event) {
+        var rect = el.getBoundingClientRect();
+        el.style.setProperty("--mx", event.clientX - rect.left + "px");
+        el.style.setProperty("--my", event.clientY - rect.top + "px");
+      });
+    });
+  </script>
+</body>
+
+</html>
