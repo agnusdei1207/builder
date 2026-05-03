@@ -12,6 +12,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
+  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2339ff14"
+    type="image/svg+xml">
   <style>
     :root {
       --brand: #39ff14;
@@ -138,17 +140,36 @@
       letter-spacing: -0.03em;
     }
 
-    .brand-mark {
+    .brand-icon {
       display: grid;
       place-items: center;
       width: 1.55rem;
       height: 1.55rem;
-      color: #021002;
-      background: var(--brand);
+      padding: 0.22rem;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(182, 255, 158, 0.8), transparent 45%),
+        rgba(57, 255, 20, 0.14);
       border-radius: 0.45rem;
+      border: 1px solid var(--brand-border);
       box-shadow: 0 0 24px rgba(57, 255, 20, 0.42);
-      font-family: var(--mono);
-      font-weight: 800;
+    }
+
+    .brand-icon img,
+    .hero-icon,
+    .footer-icon {
+      display: block;
+      width: 100%;
+      height: 100%;
+      filter:
+        brightness(0)
+        saturate(100%)
+        invert(78%)
+        sepia(94%)
+        saturate(1152%)
+        hue-rotate(48deg)
+        brightness(104%)
+        contrast(111%)
+        drop-shadow(0 0 12px rgba(57, 255, 20, 0.42));
     }
 
     .nav-links {
@@ -233,21 +254,28 @@
       animation-delay: 1.4s;
     }
 
-    .terminal-mark {
+    .hero-icon-shell {
       position: relative;
       z-index: 2;
       width: 5.2rem;
       height: 5.2rem;
       display: grid;
       place-items: center;
+      padding: 1rem;
       border-radius: 1.35rem;
-      background: #071007;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(182, 255, 158, 0.16), transparent 42%),
+        linear-gradient(145deg, rgba(57, 255, 20, 0.14), rgba(2, 6, 2, 0.92));
       border: 1px solid var(--brand-border);
-      box-shadow: 0 0 40px rgba(57, 255, 20, 0.24);
-      color: var(--brand);
-      font-family: var(--mono);
-      font-size: 2.3rem;
-      font-weight: 800;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 0 40px rgba(57, 255, 20, 0.24),
+        0 0 80px rgba(57, 255, 20, 0.12);
+    }
+
+    .hero-icon {
+      width: 3.2rem;
+      height: 3.2rem;
     }
 
     .eyebrow {
@@ -658,7 +686,9 @@
 
   <nav class="nav">
     <a class="brand" href="#top" aria-label="Builder home">
-      <span class="brand-mark">&gt;_</span>
+      <span class="brand-icon">
+        <img src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt="" aria-hidden="true">
+      </span>
       <span>builder</span>
     </a>
     <div class="nav-links">
@@ -676,7 +706,10 @@
           <div class="pulse"></div>
           <div class="pulse"></div>
           <div class="ring"></div>
-          <div class="terminal-mark">$</div>
+          <div class="hero-icon-shell">
+            <img class="hero-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt=""
+              aria-hidden="true">
+          </div>
         </div>
         <div class="eyebrow">runtime-owned agent</div>
         <h1>Build with <span class="grad">proof</span></h1>
@@ -833,7 +866,13 @@ docker run --rm -it \
   </main>
 
   <footer>
-    <div>builder © 2026</div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span class="brand-icon" style="width:1.25rem;height:1.25rem;border-radius:0.35rem;">
+        <img class="footer-icon" src="https://api.iconify.design/hugeicons:blockchain-01.svg" alt=""
+          aria-hidden="true">
+      </span>
+      <span>builder © 2026</span>
+    </div>
     <div>Runtime-owned coding agent. Public distribution surface.</div>
   </footer>
 
