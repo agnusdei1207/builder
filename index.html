@@ -1,216 +1,947 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Builder - Dynamic Agent CLI Harness</title>
-  <meta name="description" content="Dynamically assembled agent CLI harness. Agents spawn, expand, and dissolve on demand. Runtime-owned orchestration, PostgreSQL-backed, zero-panic Rust.">
+  <title>Builder - Runtime-Owned Coding Agent CLI</title>
+  <meta
+    name="description"
+    content="Builder is a runtime-owned coding agent CLI. The runtime controls routing, tool policy, verification, delegated runs, and completion over PostgreSQL 18 + pgvector.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" type="image/svg+xml">
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-  <style type="text/tailwindcss">
-    @theme {
-      --color-brand: #00c8a0;
-      --color-brand-soft: #66dfca;
-      --color-brand-dim: rgba(0, 200, 160, 0.1);
-      --color-brand-border: rgba(0, 200, 160, 0.28);
-      --color-cyan: #67e8f9;
-      --color-bg: #020605;
-      --color-bg-deep: #050a09;
-      --color-term: #020504;
-      --color-text-hi: #e8fff8;
-      --color-text-md: #a0cfbf;
-      --color-text-lo: #537a6c;
-      --color-text-dim: #3d6b5c;
-      --color-bordercolor: rgba(0, 200, 160, 0.1);
-      --color-bordercolor-hi: rgba(0, 200, 160, 0.36);
-      --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0">
+  <style>
+    :root {
+      --bg: #050b0a;
+      --bg-elevated: rgba(10, 20, 18, 0.82);
+      --bg-card: rgba(10, 20, 18, 0.72);
+      --bg-card-strong: rgba(13, 29, 24, 0.9);
+      --text-hi: #edfff8;
+      --text-md: #aed4c7;
+      --text-lo: #6f988a;
+      --border: rgba(0, 200, 160, 0.15);
+      --border-strong: rgba(0, 200, 160, 0.32);
+      --brand: #00c8a0;
+      --brand-soft: #71e7d0;
+      --cyan: #7de8ff;
+      --shadow: 0 30px 90px -36px rgba(0, 0, 0, 0.88);
+      --hero-glow: radial-gradient(circle at top, rgba(0, 200, 160, 0.22), transparent 36%);
+      --grid: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      --code-bg: #081110;
+      --button-text: #042019;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #edf8f4;
+      --bg-elevated: rgba(255, 255, 255, 0.82);
+      --bg-card: rgba(255, 255, 255, 0.92);
+      --bg-card-strong: rgba(241, 255, 250, 0.95);
+      --text-hi: #072019;
+      --text-md: #295949;
+      --text-lo: #4c786a;
+      --border: rgba(0, 125, 100, 0.14);
+      --border-strong: rgba(0, 125, 100, 0.24);
+      --brand: #009b7a;
+      --brand-soft: #0fbd98;
+      --cyan: #1294bf;
+      --shadow: 0 30px 90px -40px rgba(12, 43, 34, 0.24);
+      --hero-glow: radial-gradient(circle at top, rgba(0, 155, 122, 0.12), transparent 38%);
+      --grid: linear-gradient(rgba(11, 55, 41, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(11, 55, 41, 0.04) 1px, transparent 1px);
+      --code-bg: #f3fcf8;
+      --button-text: #f7fffd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-hi);
+      background:
+        var(--hero-glow),
+        radial-gradient(circle at 18% 18%, rgba(0, 200, 160, 0.16), transparent 24rem),
+        radial-gradient(circle at 82% 22%, rgba(125, 232, 255, 0.12), transparent 22rem),
+        linear-gradient(180deg, var(--bg) 0%, #07100f 48%, var(--bg) 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: var(--grid);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at top, black 28%, transparent 82%);
+      pointer-events: none;
+      opacity: 0.95;
+      z-index: -2;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1120px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(20px);
+      background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 72px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .logo-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      background: radial-gradient(circle at top left, rgba(113, 231, 208, 0.28), transparent 46%), var(--bg-card-strong);
+      box-shadow: 0 0 28px rgba(0, 200, 160, 0.18);
+    }
+
+    .logo span {
+      color: var(--brand-soft);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .header-link,
+    .theme-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-md);
+      transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+
+    .header-link:hover,
+    .theme-btn:hover,
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .surface-card:hover,
+    .feature-card:hover,
+    .step-card:hover,
+    .command-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+    }
+
+    .hero {
+      padding: 88px 0 36px;
+    }
+
+    .hero-shell {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top right, rgba(125, 232, 255, 0.08), transparent 18rem),
+        linear-gradient(180deg, rgba(10, 22, 19, 0.92), rgba(6, 14, 12, 0.9));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-shell::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -44% auto;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(0, 200, 160, 0.12), transparent 62%);
+      filter: blur(26px);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      color: var(--brand-soft);
+      background: rgba(0, 200, 160, 0.08);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 28px;
+      margin-top: 24px;
+    }
+
+    .hero-copy h1 {
+      margin: 0;
+      max-width: 10ch;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 0.9;
+      letter-spacing: -0.08em;
+    }
+
+    .hero-copy p {
+      margin: 20px 0 0;
+      max-width: 60ch;
+      color: var(--text-md);
+      font-size: 1.04rem;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      font-weight: 700;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-soft) 100%);
+      color: var(--button-text);
+      box-shadow: 0 18px 36px -22px rgba(0, 200, 160, 0.85);
+    }
+
+    .secondary-btn {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-hi);
+    }
+
+    .hero-panel {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(5, 13, 11, 0.88);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text-lo);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .traffic {
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    .traffic span {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.85;
+    }
+
+    .traffic span:nth-child(1) { color: #ff6b6b; }
+    .traffic span:nth-child(2) { color: #ffd43b; }
+    .traffic span:nth-child(3) { color: #63e6be; }
+
+    .hero-console {
+      margin-top: 14px;
+      padding: 18px;
+      border-radius: 18px;
+      background: var(--code-bg);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.87rem;
+      line-height: 1.85;
+      color: var(--text-md);
+      min-height: 100%;
+    }
+
+    .hero-console .muted {
+      color: var(--text-lo);
+    }
+
+    .hero-console .brand {
+      color: var(--brand-soft);
+    }
+
+    .hero-console .accent {
+      color: var(--cyan);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .stat-card,
+    .feature-card,
+    .surface-card,
+    .step-card,
+    .command-card {
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.45rem;
+      letter-spacing: -0.05em;
+    }
+
+    .stat-card span {
+      display: block;
+      margin-top: 6px;
+      color: var(--text-lo);
+      font-size: 0.9rem;
+    }
+
+    .section {
+      padding: 34px 0;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    .section-heading p {
+      margin: 0;
+      max-width: 62ch;
+      color: var(--text-md);
+      line-height: 1.7;
+    }
+
+    .feature-grid,
+    .surface-grid,
+    .steps-grid,
+    .commands-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .feature-grid,
+    .surface-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .steps-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .commands-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--brand-soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .feature-card h3,
+    .surface-card h3,
+    .step-card h3,
+    .command-card h3 {
+      margin: 16px 0 10px;
+      font-size: 1.1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .feature-card p,
+    .surface-card p,
+    .step-card p,
+    .command-card p {
+      margin: 0;
+      color: var(--text-md);
+      line-height: 1.7;
+    }
+
+    .surface-card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+      color: var(--text-md);
+      line-height: 1.7;
+    }
+
+    .surface-card li + li {
+      margin-top: 8px;
+    }
+
+    .step-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      background: rgba(0, 200, 160, 0.08);
+      font-weight: 800;
+      color: var(--brand-soft);
+    }
+
+    .command-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .command-label {
+      color: var(--text-lo);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-md);
+      cursor: pointer;
+    }
+
+    .copy-btn.copied {
+      color: var(--brand-soft);
+      border-color: var(--border-strong);
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text-hi);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.84rem;
+      line-height: 1.8;
+    }
+
+    code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    .inline-code {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--brand-soft);
+      font-size: 0.85rem;
+    }
+
+    .footer {
+      padding: 40px 0 60px;
+      color: var(--text-lo);
+    }
+
+    .footer-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px 24px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      box-shadow: var(--shadow);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .feature-grid,
+      .surface-grid,
+      .steps-grid,
+      .commands-grid,
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner,
+      .section-heading,
+      .footer-box {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero {
+        padding-top: 54px;
+      }
+
+      .hero-shell {
+        padding: 22px;
+      }
+
+      .hero-grid,
+      .feature-grid,
+      .surface-grid,
+      .steps-grid,
+      .commands-grid,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy h1 {
+        max-width: none;
+      }
     }
   </style>
-  <style>
-    @keyframes icon-pulse { 0%,100%{filter:drop-shadow(0 0 20px rgba(0,200,160,.45));transform:scale(1)} 50%{filter:drop-shadow(0 0 40px rgba(0,200,160,.7));transform:scale(1.05)} }
-    @keyframes ring-spin-center { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)} }
-    @keyframes ring-pulse-brand { 0%{transform:translate(-50%,-50%) scale(1);opacity:.7} 100%{transform:translate(-50%,-50%) scale(1.35);opacity:0} }
-    .hero-icon { animation: icon-pulse 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(0,200,160,.45)) drop-shadow(0 0 50px rgba(0,200,160,.15)); }
-    .hero-ring { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1px solid var(--color-brand-border); animation: ring-spin-center 8s linear infinite; pointer-events:none; }
-    .hero-ripple { position:absolute; top:50%; left:50%; border-radius:50%; border:1px solid var(--color-brand-border); pointer-events:none; animation: ring-pulse-brand 3s ease-out infinite; }
-    .card-hover { transition: all 0.35s cubic-bezier(0.16,1,0.3,1); }
-    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 24px 60px -16px rgba(0,0,0,0.7); }
-    .code-comment { color: #5d7c58; }
-    .code-string { color: #dcffd7; }
-  </style>
 </head>
-
-<body class="min-h-screen font-sans text-text-hi bg-bg overflow-x-hidden relative selection:bg-brand/30 selection:text-brand-soft">
-  <div class="fixed inset-0 z-[-2] pointer-events-none bg-[length:56px_56px] [mask-image:radial-gradient(ellipse_78%_70%_at_50%_0%,black_34%,transparent_100%)]" style="background-image: linear-gradient(rgba(0, 200, 160, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 200, 160, 0.055) 1px, transparent 1px);"></div>
-  <div class="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(ellipse_at_50%_0%,transparent_0_40%,rgba(2,4,2,0.84)_78%)] opacity-80"></div>
-  <div class="fixed inset-0 z-[-3] pointer-events-none bg-[radial-gradient(circle_at_50%_-20%,rgba(0,200,160,0.2),transparent_34rem),radial-gradient(circle_at_84%_18%,rgba(103,232,249,0.1),transparent_28rem),linear-gradient(180deg,#020402_0%,#050905_54%,#020402_100%)]"></div>
-  <div class="fixed top-[-12rem] left-[-12rem] w-[34rem] h-[34rem] bg-[radial-gradient(circle,rgba(0,200,160,0.18),transparent_62%)] blur-[88px] opacity-90 z-[-1] pointer-events-none"></div>
-  <div class="fixed bottom-[-8rem] right-[-8rem] w-[30rem] h-[30rem] bg-[radial-gradient(circle,rgba(0,200,160,0.12),transparent_60%)] blur-[80px] z-[-1] pointer-events-none"></div>
-
-  <nav class="fixed top-0 inset-x-0 z-20 flex items-center justify-between h-[3.4rem] px-4 md:px-14 bg-bg/82 border-b border-bordercolor backdrop-blur-[22px] saturate-[1.35]">
-    <a class="flex items-center gap-2.5 font-extrabold tracking-[-0.03em]" href="#top" aria-label="Builder home">
-      <span class="grid place-items-center w-6 h-6 p-1 bg-[radial-gradient(circle_at_35%_25%,rgba(102,223,202,0.8),transparent_45%),rgba(0,200,160,0.14)] rounded border border-brand-border shadow-[0_0_24px_rgba(0,200,160,0.42)]">
-        <img class="w-full h-full drop-shadow-[0_0_12px_rgba(0,200,160,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
-      </span>
-      <span>builder</span>
-    </a>
-    <div class="flex items-center gap-3">
-      <span class="text-[0.6rem] font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded bg-[rgba(34,212,122,0.1)] border border-[rgba(34,212,122,0.25)] text-[#22d47a]">MIT</span>
-      <a class="text-text-md text-[0.78rem] font-bold px-3 py-1.5 border border-bordercolor rounded-full transition-all hover:text-brand hover:border-brand-border hover:bg-brand-dim" href="https://github.com/agnusdei1207/builder">GitHub</a>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#top" aria-label="Builder home">
+        <span class="logo-mark">
+          <img
+            src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0"
+            width="22"
+            height="22"
+            alt="">
+        </span>
+        <span>builder <span>runtime</span></span>
+      </a>
+      <div class="header-actions">
+        <a class="header-link" href="https://github.com/agnusdei1207/builder">GitHub</a>
+        <a class="header-link" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
+        <a class="header-link" href="https://github.com/agnusdei1207/builder/blob/main/README.md">README</a>
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
+      </div>
     </div>
-  </nav>
+  </header>
 
   <main id="top">
-    <section class="min-h-[90vh] grid place-items-center pt-28 pb-16 px-5 text-center">
-      <div class="w-full max-w-[70rem] flex flex-col items-center">
-        <div class="relative flex items-center justify-center w-32 h-32 mb-8">
-          <div class="hero-ripple w-[140px] h-[140px] border-[rgba(0,200,160,0.08)]" style="animation-delay:1.8s"></div>
-          <div class="hero-ripple w-[170px] h-[170px] border-[rgba(0,200,160,0.12)]" style="animation-delay:.9s"></div>
-          <div class="hero-ripple w-[200px] h-[200px]"></div>
-          <div class="hero-ring w-[120px] h-[120px] opacity-60"></div>
-          <div class="hero-ring w-[160px] h-[160px]" style="animation-direction:reverse;animation-duration:15s"></div>
-          <div class="relative z-10 w-20 h-20 flex items-center justify-center p-4 rounded-2xl border border-brand-border bg-[radial-gradient(circle_at_35%_25%,rgba(102,223,202,0.16),transparent_42%),linear-gradient(145deg,rgba(0,200,160,0.14),rgba(2,6,5,0.92))]">
-            <img class="hero-icon w-full h-full" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
-          </div>
-        </div>
-        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 border border-brand-border rounded-full text-brand-soft bg-[rgba(0,200,160,0.075)] font-mono text-[0.72rem] font-bold uppercase tracking-[0.12em]">dynamic agent harness</div>
-        <h1 class="max-w-[16ch] text-[clamp(3.5rem,10vw,8rem)] leading-[0.85] tracking-[-0.08em] font-extrabold drop-shadow-[0_0_34px_rgba(0,200,160,0.2)]">
-          Agents that <span class="text-transparent bg-clip-text bg-[linear-gradient(120deg,var(--color-brand)_0%,var(--color-brand-soft)_52%,var(--color-cyan)_100%)]">assemble</span> themselves
-        </h1>
-        <p class="w-full max-w-[42rem] mt-6 text-text-md text-[clamp(1rem,1.5vw,1.2rem)] leading-[1.55]">Based on your request, agents dynamically spawn, expand to handle complexity, then dissolve when their purpose is served. The runtime orchestrates the assembly.</p>
-        <div class="flex flex-wrap justify-center gap-3 mt-8">
-          <a href="https://github.com/agnusdei1207/builder/releases" class="px-6 py-3.5 bg-brand text-[#1e1b4b] font-bold rounded-xl shadow-[0_0_0_1px_var(--color-brand),0_16px_48px_-8px_rgba(0,200,160,0.5)] hover:bg-brand-soft hover:shadow-[0_0_0_1px_var(--color-brand-soft),0_20px_56px_-8px_rgba(0,200,160,0.65)] transition-all hover:-translate-y-0.5">GitHub Releases</a>
-          <a href="#architecture" class="px-6 py-3.5 border border-bordercolor-hi bg-[rgba(0,200,160,0.03)] text-text-md font-semibold rounded-xl transition-all hover:border-brand-border hover:text-brand hover:bg-brand-dim">How It Works ↓</a>
-        </div>
-        <p class="mt-6 text-text-lo text-[0.75rem]">PostgreSQL 18 + pgvector · 28 Rust crates · Zero panic</p>
-      </div>
-    </section>
-
-    <div class="border-y border-bordercolor bg-bg-deep/50">
-      <div class="max-w-[78rem] mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-bordercolor">
-        <div class="p-5 text-center"><div class="text-3xl font-black text-brand font-mono tracking-tight">∞</div><div class="text-text-lo text-[0.72rem] mt-1">Agent Configurations</div></div>
-        <div class="p-5 text-center"><div class="text-3xl font-black text-brand font-mono tracking-tight">5</div><div class="text-text-lo text-[0.72rem] mt-1">Lifecycle Phases</div></div>
-        <div class="p-5 text-center"><div class="text-3xl font-black text-brand font-mono tracking-tight">28</div><div class="text-text-lo text-[0.72rem] mt-1">Rust Crates</div></div>
-        <div class="p-5 text-center"><div class="text-3xl font-black text-brand font-mono tracking-tight">0</div><div class="text-text-lo text-[0.72rem] mt-1">Panic Allowed</div></div>
-      </div>
-    </div>
-
-    <a id="architecture"></a>
-    <section class="py-20 px-5">
-      <div class="max-w-[78rem] mx-auto">
-        <div class="grid md:grid-cols-2 gap-6 mb-12">
-          <div class="border border-bordercolor-hi rounded-2xl p-8 bg-[linear-gradient(160deg,#0d1c18_0%,#050a09_100%)]">
-            <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-black tracking-tight mb-4">Dynamic Agent Lifecycle</h2>
-            <p class="text-text-md leading-relaxed mb-4"><strong>Agents are not static.</strong> Based on your intent, the runtime spawns specialized agents, scales them when tasks grow complex, and dissolves them when their work is done.</p>
-            <p class="text-text-lo text-[0.85rem] leading-relaxed">The harness manages agent creation, expansion, delegation, and cleanup — all driven by the runtime's orchestration layer.</p>
-          </div>
-          <div class="border border-bordercolor rounded-2xl overflow-hidden bg-term">
-            <div class="flex items-center h-10 px-4 border-b border-bordercolor bg-[rgba(255,255,255,0.02)]">
-              <div class="flex gap-1.5"><div class="w-2 h-2 rounded-full bg-[#ff5f56]"></div><div class="w-2 h-2 rounded-full bg-[#ffbd2e]"></div><div class="w-2 h-2 rounded-full bg-[#27c93f]"></div></div>
-              <span class="ml-auto font-mono text-[0.6rem] text-text-dim uppercase tracking-widest">builder</span>
+    <section class="hero">
+      <div class="container hero-shell">
+        <span class="eyebrow">runtime-owned coding agent CLI</span>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>Builder keeps the runtime in charge.</h1>
+            <p>
+              Builder is a local-first coding agent CLI where the runtime, not the model,
+              owns routing, tool policy, verification, delegated-run lineage, and completion.
+              PostgreSQL 18 + pgvector backs the operational state, retrieval, and memory layers.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-btn" href="https://github.com/agnusdei1207/builder/releases">Get the binary</a>
+              <a class="secondary-btn" href="#quickstart">Quick start</a>
+              <a class="secondary-btn" href="https://github.com/agnusdei1207/builder">Public repo</a>
             </div>
-            <div class="p-5 font-mono text-[0.78rem] leading-[2.1]">
-              <div class="text-text-lo">// "implement login API"</div>
-              <div><span class="text-brand">spawn</span> researcher agent ✓</div>
-              <div><span class="text-brand">spawn</span> builder agent ✓</div>
-              <div><span class="text-text-lo">[expand]</span> complexity detected</div>
-              <div><span class="text-cyan">[delegate]</span> test-runner spawned</div>
-              <div><span class="text-text-lo">[delegate]</span> reviewer spawned</div>
-              <div><span class="text-[#fb923c]">[verify]</span> all agents reporting</div>
-              <div><span class="text-brand">dissolve</span> test-runner ✓</div>
-              <div><span class="text-[#22d47a]">[dissolve]</span> reviewer ✓</div>
-              <div><span class="text-[#22d47a]">TASK COMPLETED · 2 agents dissolved</span></div>
+          </div>
+          <div class="hero-panel">
+            <div class="panel-title">
+              <span class="traffic"><span></span><span></span><span></span></span>
+              <span>execution contract</span>
+            </div>
+            <div class="hero-console">
+              <div class="muted">$ builder "Investigate and fix the regression"</div>
+              <div><span class="brand">classify</span> request -> <span class="accent">route</span> the right agent</div>
+              <div><span class="brand">enforce</span> tool policy + workflow gates</div>
+              <div><span class="accent">record</span> objectives, lineage, evidence, verification</div>
+              <div><span class="brand">adjudicate</span> completion before reporting done</div>
+              <br>
+              <div class="muted">Public repo = distribution shell only</div>
+              <div>index.html</div>
+              <div>README.md</div>
+              <div>compose.yaml</div>
+              <div>GitHub Releases</div>
             </div>
           </div>
         </div>
-        <div class="grid md:grid-cols-3 gap-5">
-          <div class="card-hover border border-bordercolor rounded-2xl p-6 bg-bg-surface cursor-pointer">
-            <div class="text-[0.9375rem] font-bold tracking-tight mb-2">On-Demand Spawning</div>
-            <div class="text-text-md text-[0.85rem] leading-relaxed">Agents spawn only when needed. The harness monitors task complexity and triggers new agents dynamically.</div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <strong>Runtime-owned</strong>
+            <span>Routing, policy, verification, and completion stay outside the model.</span>
           </div>
-          <div class="card-hover border border-bordercolor rounded-2xl p-6 bg-bg-surface cursor-pointer">
-            <div class="text-[0.9375rem] font-bold tracking-tight mb-2">Auto-Expansion</div>
-            <div class="text-text-md text-[0.85rem] leading-relaxed">When tasks grow complex, the harness expands the agent team. Sub-agents delegate work and report back.</div>
+          <div class="stat-card">
+            <strong>PostgreSQL 18</strong>
+            <span>Operational storage and pgvector-backed retrieval are unified.</span>
           </div>
-          <div class="card-hover border border-bordercolor rounded-2xl p-6 bg-bg-surface cursor-pointer">
-            <div class="text-[0.9375rem] font-bold tracking-tight mb-2">Graceful Dissolution</div>
-            <div class="text-text-md text-[0.85rem] leading-relaxed">Agents dissolve when their purpose is served. No lingering processes, no wasted resources — pure task-based lifecycle.</div>
+          <div class="stat-card">
+            <strong>Delegated runs</strong>
+            <span>Parent and child work stay linked through overlays, packets, and lineage.</span>
+          </div>
+          <div class="stat-card">
+            <strong>Public shell</strong>
+            <span>The public repo ships install docs, compose, and release surfaces only.</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="py-16 px-5 border-t border-bordercolor">
-      <div class="max-w-[78rem] mx-auto">
-        <h2 class="text-[clamp(1.75rem,3.5vw,2.75rem)] font-black tracking-tight text-center mb-10">Agent Lifecycle Phases</h2>
-        <div class="border border-bordercolor rounded-xl overflow-x-auto">
-          <table class="w-full border-collapse text-[0.8rem] min-w-[30rem]">
-            <thead><tr class="bg-[rgba(99,102,241,0.04)] border-b border-bordercolor"><th class="text-left p-4 text-text-lo font-semibold uppercase tracking-wider">Phase</th><th class="text-left p-4 text-text-lo font-semibold uppercase tracking-wider">Trigger</th><th class="text-left p-4 text-text-lo font-semibold uppercase tracking-wider">Action</th></tr></thead>
-            <tbody>
-              <tr class="border-b border-[rgba(99,102,241,0.05)]"><td class="p-4 font-mono text-brand font-bold">Spawn</td><td class="p-4 text-text-md">Task requires specialized capability</td><td class="p-4 text-[#22d47a] font-bold">Create agent instance</td></tr>
-              <tr class="border-b border-[rgba(99,102,241,0.05)]"><td class="p-4 font-mono text-brand font-bold">Expand</td><td class="p-4 text-text-md">Complexity exceeds current capacity</td><td class="p-4 text-[#22d47a] font-bold">Delegate to sub-agents</td></tr>
-              <tr class="border-b border-[rgba(99,102,241,0.05)]"><td class="p-4 font-mono text-brand font-bold">Execute</td><td class="p-4 text-text-md">Agent ready for task work</td><td class="p-4 text-[#22d47a] font-bold">Run with runtime policy</td></tr>
-              <tr class="border-b border-[rgba(99,102,241,0.05)]"><td class="p-4 font-mono text-brand font-bold">Verify</td><td class="p-4 text-text-md">Completion gate check required</td><td class="p-4 text-[#22d47a] font-bold">Evidence collection</td></tr>
-              <tr><td class="p-4 font-mono text-brand font-bold">Dissolve</td><td class="p-4 text-text-md">Purpose served, task complete</td><td class="p-4 text-[#22d47a] font-bold">Cleanup & terminate</td></tr>
-            </tbody>
-          </table>
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <h2>Why Builder feels different</h2>
+          </div>
+          <p>
+            The runtime treats model output as a candidate, not the final authority.
+            That changes how routing, tools, verification, and delegated work are handled.
+          </p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="card-kicker">01 runtime-owned completion</span>
+            <h3>Completion is adjudicated</h3>
+            <p>
+              Builder tracks objectives, evidence, and verification runs before a task is allowed
+              to close. A fluent answer is not enough by itself.
+            </p>
+          </article>
+          <article class="feature-card">
+            <span class="card-kicker">02 tool policy</span>
+            <h3>Tool use is policy-gated</h3>
+            <p>
+              Request routing, execution strategy, and workflow phase determine what can run.
+              Shell, writes, and network access are runtime decisions, not model improvisation.
+            </p>
+          </article>
+          <article class="feature-card">
+            <span class="card-kicker">03 delegated lineage</span>
+            <h3>Delegation stays traceable</h3>
+            <p>
+              Child runs keep parent linkage, dynamic overlays, spawned objectives, and packet
+              records so sub-agent work does not disappear into raw transcript text.
+            </p>
+          </article>
+          <article class="feature-card">
+            <span class="card-kicker">04 retrieval + memory</span>
+            <h3>State stays close to the runtime</h3>
+            <p>
+              Retrieval, workspace indexing, and conversation memory stay attached to the runtime
+              state model instead of being treated as detached prompt glue.
+            </p>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="py-16 px-5 border-t border-bordercolor" id="quickstart">
-      <div class="max-w-[55rem] mx-auto">
-        <h2 class="text-[clamp(1.75rem,3.5vw,2.75rem)] font-black tracking-tight text-center mb-4">Quick Start</h2>
-        <div class="grid md:grid-cols-2 gap-5 mt-10">
-          <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
-            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(0,200,160,0.045)]">
-              <span class="text-brand font-mono text-[0.68rem] font-bold">01 docker compose</span>
-            </div>
-            <pre class="p-5 overflow-x-auto font-mono text-[0.82rem] leading-[1.75]"><code><span class="code-comment"># PostgreSQL 18 + Builder</span>
-<span class="code-string">curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml</span>
-<span class="code-string">docker compose up -d</span>
-
-<span class="code-comment"># Run builder harness in your project</span>
-<span class="code-string">BUILDER_PROJECT_DIR=$(pwd) docker compose run builder</span></code></pre>
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <h2>What the public repo actually ships</h2>
           </div>
-          <div class="overflow-hidden border border-bordercolor rounded-[1.2rem] bg-term">
-            <div class="flex items-center h-[2.4rem] px-3.5 border-b border-bordercolor bg-[rgba(0,200,160,0.045)]">
-              <span class="text-brand font-mono text-[0.68rem] font-bold">02 direct install</span>
-            </div>
-            <pre class="p-5 overflow-x-auto font-mono text-[0.82rem] leading-[1.75]"><code><span class="code-comment"># Download binary</span>
-<span class="code-string">curl -LO https://github.com/agnusdei1207/builder/releases/latest/download/builder-$(uname -m)-unknown-linux-musl</span>
-
-<span class="code-string">chmod +x builder-*</span>
-<span class="code-string">./builder-* --help</span></code></pre>
-          </div>
+          <p>
+            Builder's public repository is intentionally a distribution shell. It exposes the
+            install surface and release artifacts without mirroring the private source tree.
+          </p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-          <a href="https://github.com/agnusdei1207/builder" class="block p-4 border border-bordercolor rounded-xl bg-bg-surface hover:border-brand-border hover:bg-brand-dim transition-all">
-            <div class="text-[0.6rem] font-bold uppercase tracking-wider text-text-dim mb-1"><img src="https://api.iconify.design/lucide:github.svg?color=%234a4d7a" width="9" height="9" class="inline mr-1">GitHub</div>
-            <div class="text-brand-soft text-[0.8125rem] font-semibold">agnusdei1207/builder</div>
-          </a>
-          <a href="https://github.com/agnusdei1207/builder/releases" class="block p-4 border border-bordercolor rounded-xl bg-bg-surface hover:border-brand-border hover:bg-brand-dim transition-all">
-            <div class="text-[0.6rem] font-bold uppercase tracking-wider text-text-dim mb-1">📦 Releases</div>
-            <div class="text-brand-soft text-[0.8125rem] font-semibold">Latest builds</div>
-          </a>
-          <a href="https://github.com/agnusdei1207/builder/blob/main/ARCHITECTURE.md" class="block p-4 border border-bordercolor rounded-xl bg-bg-surface hover:border-brand-border hover:bg-brand-dim transition-all">
-            <div class="text-[0.6rem] font-bold uppercase tracking-wider text-text-dim mb-1">📖 Docs</div>
-            <div class="text-brand-soft text-[0.8125rem] font-semibold">ARCHITECTURE.md</div>
-          </a>
+        <div class="surface-grid">
+          <article class="surface-card">
+            <span class="card-kicker">landing</span>
+            <h3>Static project surface</h3>
+            <p>This page explains the product shape and the runtime contract at a glance.</p>
+            <ul>
+              <li><span class="inline-code">index.html</span> for the public landing page</li>
+              <li>Builder-specific messaging instead of generic AI-agent filler</li>
+            </ul>
+          </article>
+          <article class="surface-card">
+            <span class="card-kicker">docs</span>
+            <h3>Install + operator README</h3>
+            <p>
+              The public README covers quick start, binary download, Docker image usage, and the
+              runtime-owned positioning without exposing the private codebase.
+            </p>
+            <ul>
+              <li><span class="inline-code">README.md</span></li>
+              <li>Quick start for Compose, binary, and Docker image</li>
+            </ul>
+          </article>
+          <article class="surface-card">
+            <span class="card-kicker">compose</span>
+            <h3>Ready-to-run local stack</h3>
+            <p>
+              Public Compose starts PostgreSQL and Builder together. The runtime uses PostgreSQL 18
+              + pgvector as the operational backend.
+            </p>
+            <ul>
+              <li><span class="inline-code">compose.yaml</span></li>
+              <li>Project mount via <span class="inline-code">BUILDER_PROJECT_DIR</span></li>
+            </ul>
+          </article>
+          <article class="surface-card">
+            <span class="card-kicker">releases</span>
+            <h3>Binary + image delivery</h3>
+            <p>
+              GitHub Releases and Docker Hub remain the public delivery channel for the CLI itself.
+              Source stays in the private repository.
+            </p>
+            <ul>
+              <li>Release binaries from GitHub Releases</li>
+              <li><span class="inline-code">agnusdei1207/builder:latest</span> image</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <h2>Execution contract</h2>
+          </div>
+          <p>
+            Builder's runtime path is intentionally opinionated: classify, route, execute under
+            policy, then verify and adjudicate before closing the task.
+          </p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card">
+            <span class="step-index">1</span>
+            <h3>Classify</h3>
+            <p>
+              Intent classification and request routing decide whether the turn is planning,
+              investigation, implementation, review, or general execution.
+            </p>
+          </article>
+          <article class="step-card">
+            <span class="step-index">2</span>
+            <h3>Route + constrain</h3>
+            <p>
+              Execution strategy and dynamic profile shape which tools are allowed, which phase is
+              active, and whether delegation should carry an overlay.
+            </p>
+          </article>
+          <article class="step-card">
+            <span class="step-index">3</span>
+            <h3>Record work</h3>
+            <p>
+              Objectives, state cards, workflow steps, recovery routes, and delegated lineage are
+              all written into operational storage as the run progresses.
+            </p>
+          </article>
+          <article class="step-card">
+            <span class="step-index">4</span>
+            <h3>Verify before done</h3>
+            <p>
+              The runtime requires evidence and verification to close the loop instead of trusting
+              a polished final answer on its own.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="quickstart">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <h2>Quick start</h2>
+          </div>
+          <p>
+            Choose the path that matches how you want to run Builder: local Compose, direct
+            binary download, or the published Docker image.
+          </p>
+        </div>
+        <div class="commands-grid">
+          <article class="command-card">
+            <div class="command-head">
+              <span class="command-label">compose</span>
+              <button
+                class="copy-btn"
+                type="button"
+                data-copy="# Start PostgreSQL + Builder&#10;curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml&#10;docker compose up -d&#10;&#10;# Run Builder in your project directory&#10;BUILDER_PROJECT_DIR=$(pwd) docker compose run builder"
+                aria-label="Copy compose command">
+                Copy
+              </button>
+            </div>
+            <h3>Run with PostgreSQL + Builder</h3>
+            <p>Good default when you want the full public runtime stack in one command.</p>
+            <pre><code>curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml
+docker compose up -d
+
+BUILDER_PROJECT_DIR=$(pwd) docker compose run builder</code></pre>
+          </article>
+          <article class="command-card">
+            <div class="command-head">
+              <span class="command-label">binary</span>
+              <button
+                class="copy-btn"
+                type="button"
+                data-copy="# Download the latest Linux binary&#10;curl -LO https://github.com/agnusdei1207/builder/releases/latest/download/builder-x86_64-unknown-linux-musl&#10;chmod +x builder-x86_64-unknown-linux-musl&#10;./builder-x86_64-unknown-linux-musl --help"
+                aria-label="Copy binary command">
+                Copy
+              </button>
+            </div>
+            <h3>Download the CLI directly</h3>
+            <p>Use GitHub Releases when you want a single binary without the Compose stack.</p>
+            <pre><code>curl -LO https://github.com/agnusdei1207/builder/releases/latest/download/builder-x86_64-unknown-linux-musl
+chmod +x builder-x86_64-unknown-linux-musl
+./builder-x86_64-unknown-linux-musl --help</code></pre>
+          </article>
+          <article class="command-card">
+            <div class="command-head">
+              <span class="command-label">docker image</span>
+              <button
+                class="copy-btn"
+                type="button"
+                data-copy="# Run the public Builder image&#10;docker pull agnusdei1207/builder:latest&#10;docker run --rm -it -v &quot;$(pwd):/workspace&quot; -w /workspace agnusdei1207/builder:latest"
+                aria-label="Copy docker image command">
+                Copy
+              </button>
+            </div>
+            <h3>Use the published image</h3>
+            <p>Handy when you want Builder in a container without copying the public compose file.</p>
+            <pre><code>docker pull agnusdei1207/builder:latest
+docker run --rm -it -v "$(pwd):/workspace" -w /workspace agnusdei1207/builder:latest</code></pre>
+          </article>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="flex items-center justify-center gap-2 py-10 text-text-lo text-[0.82rem] border-t border-bordercolor">
-    <span class="grid place-items-center w-5 h-5 rounded border border-brand-border/30 bg-brand/10">
-      <img class="w-full h-full drop-shadow-[0_0_12px_rgba(0,200,160,0.42)]" src="https://api.iconify.design/hugeicons:blockchain-01.svg?color=%2300c8a0" alt="" aria-hidden="true">
-    </span>
-    <span>builder © 2026 · MIT License</span>
+  <footer class="footer">
+    <div class="container footer-box">
+      <div>
+        <strong>Builder</strong>
+        <div>Runtime-owned coding agent CLI with a public distribution shell.</div>
+      </div>
+      <div class="footer-links">
+        <a class="header-link" href="https://github.com/agnusdei1207/builder">Repo</a>
+        <a class="header-link" href="https://github.com/agnusdei1207/builder/releases">Releases</a>
+        <a class="header-link" href="https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml">Compose</a>
+      </div>
+    </div>
   </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var savedTheme = localStorage.getItem("builder-theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+        root.setAttribute("data-theme", savedTheme);
+      }
+
+      var themeButton = document.getElementById("theme-toggle");
+      themeButton.addEventListener("click", function () {
+        var nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", nextTheme);
+        localStorage.setItem("builder-theme", nextTheme);
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (button) {
+        button.addEventListener("click", function () {
+          var text = button.getAttribute("data-copy");
+          navigator.clipboard.writeText(text).then(function () {
+            var previous = button.textContent;
+            button.textContent = "Copied";
+            button.classList.add("copied");
+            setTimeout(function () {
+              button.textContent = previous;
+              button.classList.remove("copied");
+            }, 1600);
+          });
+        });
+      });
+    }());
+  </script>
 </body>
 </html>
