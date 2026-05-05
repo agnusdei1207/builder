@@ -6,7 +6,7 @@
   <title>Builder - Runtime-Owned Coding Agent CLI</title>
   <meta
     name="description"
-    content="Builder is a local-first coding agent CLI. The runtime owns routing, tool policy, verification, completion adjudication, and delegated lineage over PostgreSQL 18 + pgvector.">
+    content="Builder is a runtime-owned coding CLI. Routing, tools, verification, and completion stay in the runtime, backed by PostgreSQL 18 + pgvector.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -702,16 +702,15 @@
         <span class="eyebrow">runtime-owned coding agent CLI</span>
         <h1 class="hero-title">Builder keeps the runtime in charge.</h1>
         <p class="hero-copy">
-          Builder is a local-first coding agent CLI where the runtime, not the model, owns routing,
-          tool policy, verification, completion adjudication, and delegated-run lineage.
-          PostgreSQL 18 + pgvector is the operational backend for control-plane state, retrieval, and memory.
+          Local-first coding CLI. Runtime owns routing, tools, verification, and completion.
+          PostgreSQL 18 + pgvector backs state, retrieval, and memory.
         </p>
         <div class="hero-actions">
           <a class="hero-btn primary" href="https://github.com/agnusdei1207/builder/releases" target="_blank" rel="noopener">Get the binary</a>
           <a class="hero-btn" href="#quickstart">Quick start</a>
           <a class="hero-btn" href="https://github.com/agnusdei1207/builder/blob/main/README.md" target="_blank" rel="noopener">Public README</a>
         </div>
-        <p class="home-hint">Press <kbd>/</kbd> to search cards, commands, and public surfaces.</p>
+        <p class="home-hint">Press <kbd>/</kbd> to search.</p>
       </section>
 
       <section class="home-products">
@@ -729,7 +728,7 @@
               <img src="https://api.iconify.design/lucide:github.svg?color=%2300c8a0" width="28" height="28" alt="">
             </div>
             <h3 class="product-title">Public repository</h3>
-            <p class="product-desc">Distribution shell for install docs, releases, and the landing page.</p>
+            <p class="product-desc">Landing page, docs, and release surface.</p>
           </a>
           <a
             href="https://github.com/agnusdei1207/builder/releases"
@@ -744,7 +743,7 @@
               <img src="https://api.iconify.design/lucide:download.svg?color=%2367e8f9" width="28" height="28" alt="">
             </div>
             <h3 class="product-title">GitHub Releases</h3>
-            <p class="product-desc">Download the published Builder binaries without cloning the private source tree.</p>
+            <p class="product-desc">Published binaries for the CLI.</p>
           </a>
           <a
             href="https://github.com/agnusdei1207/builder/blob/main/README.md"
@@ -759,7 +758,7 @@
               <img src="https://api.iconify.design/lucide:book-open.svg?color=%23f59e0b" width="28" height="28" alt="">
             </div>
             <h3 class="product-title">Public README</h3>
-            <p class="product-desc">Install, operator, and quick-start documentation for the public Builder surface.</p>
+            <p class="product-desc">Install and operator docs.</p>
           </a>
           <a
             href="https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml"
@@ -774,7 +773,7 @@
               <img src="https://api.iconify.design/lucide:database.svg?color=%2300c8a0" width="28" height="28" alt="">
             </div>
             <h3 class="product-title">Public Compose</h3>
-            <p class="product-desc">Start PostgreSQL 18 + Builder together with the same public compose file shipped in the repo.</p>
+            <p class="product-desc">PostgreSQL + Builder stack.</p>
           </a>
         </div>
       </section>
@@ -792,7 +791,7 @@
               <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2300c8a0" width="24" height="24" alt="">
             </div>
             <strong>Runtime-owned completion</strong>
-            <p class="stat-copy">Model answers are candidates until verification and completion gates are closed by the runtime.</p>
+            <p class="stat-copy">Completion closes after runtime verification.</p>
           </article>
           <article
             class="stat-card"
@@ -805,7 +804,7 @@
               <img src="https://api.iconify.design/lucide:database-zap.svg?color=%2367e8f9" width="24" height="24" alt="">
             </div>
             <strong>PostgreSQL 18 + pgvector</strong>
-            <p class="stat-copy">Control-plane state, retrieval, and conversation memory share one operational backend.</p>
+            <p class="stat-copy">One backend for state, retrieval, and memory.</p>
           </article>
           <article
             class="stat-card"
@@ -818,7 +817,7 @@
               <img src="https://api.iconify.design/lucide:git-branch-plus.svg?color=%23a78bfa" width="24" height="24" alt="">
             </div>
             <strong>Delegated run lineage</strong>
-            <p class="stat-copy">Child runs keep parent linkage, overlays, objective links, and lifecycle packets queryable.</p>
+            <p class="stat-copy">Child runs keep parent linkage and traceable packets.</p>
           </article>
           <article
             class="stat-card"
@@ -831,7 +830,7 @@
               <img src="https://api.iconify.design/lucide:package.svg?color=%23f59e0b" width="24" height="24" alt="">
             </div>
             <strong>Public distribution shell</strong>
-            <p class="stat-copy">The public repo ships index.html, README, compose, image references, and release assets only.</p>
+            <p class="stat-copy">Public repo ships docs, compose, and releases only.</p>
           </article>
         </div>
       </section>
@@ -842,10 +841,7 @@
             <span class="section-kicker">Execution contract</span>
             <h2>What the runtime is actually responsible for</h2>
           </div>
-          <p>
-            Builder treats routing, policy, verification, and completion as runtime work.
-            That is the core architectural difference from model-led agent shells.
-          </p>
+          <p>Routing, policy, verification, and completion stay in the runtime.</p>
         </div>
         <div class="info-grid">
           <article
@@ -857,7 +853,7 @@
             data-keywords="intent classifier request router planning implementation research review">
             <div class="card-eyebrow">01 classify</div>
             <h3 class="card-title">Classify the request</h3>
-            <p class="card-copy">Intent classification and request routing decide whether the turn is planning, implementation, review, or a general task.</p>
+            <p class="card-copy">Decide the turn shape first.</p>
           </article>
           <article
             class="info-card"
@@ -868,7 +864,7 @@
             data-keywords="execution strategy dynamic profile tool scope shell write network approval">
             <div class="card-eyebrow">02 constrain</div>
             <h3 class="card-title">Constrain tool policy</h3>
-            <p class="card-copy">Execution strategy and dynamic profile control shell, write, and network permissions before any tool call happens.</p>
+            <p class="card-copy">Shell, write, and network stay policy-gated.</p>
           </article>
           <article
             class="info-card"
@@ -879,7 +875,7 @@
             data-keywords="objective state cards evidence workflow delegated lineage recovery routes">
             <div class="card-eyebrow">03 record</div>
             <h3 class="card-title">Record work and lineage</h3>
-            <p class="card-copy">Objectives, state cards, evidence, recovery routes, and delegated child-run lineage are written into the operational store.</p>
+            <p class="card-copy">Evidence, state, and lineage are persisted.</p>
           </article>
           <article
             class="info-card"
@@ -890,7 +886,7 @@
             data-keywords="verification adjudication proof completion candidate runtime owned completion">
             <div class="card-eyebrow">04 adjudicate</div>
             <h3 class="card-title">Verify and adjudicate completion</h3>
-            <p class="card-copy">A polished final answer is not enough. Builder closes the loop only after verification and completion proof succeed.</p>
+            <p class="card-copy">Completion needs proof, not polish.</p>
           </article>
         </div>
       </section>
@@ -901,10 +897,7 @@
             <span class="section-kicker">Public surface</span>
             <h2>What the public repo actually ships</h2>
           </div>
-          <p>
-            Builder's public repository is intentionally a distribution shell. It exists to ship the install surface,
-            not to mirror the private source tree.
-          </p>
+          <p>Public repo is a distribution shell, not a source mirror.</p>
         </div>
         <div class="info-grid">
           <article
@@ -918,7 +911,7 @@
               <img src="https://api.iconify.design/lucide:layout-template.svg?color=%2300c8a0" width="24" height="24" alt="">
             </div>
             <h3 class="card-title">Landing page</h3>
-            <p class="card-copy">A self-contained index page that explains Builder's runtime-owned model and quick-start paths.</p>
+            <p class="card-copy">Self-contained public entry page.</p>
             <span class="card-inline">public/index.html</span>
           </article>
           <article
@@ -932,7 +925,7 @@
               <img src="https://api.iconify.design/lucide:file-text.svg?color=%2367e8f9" width="24" height="24" alt="">
             </div>
             <h3 class="card-title">Public README</h3>
-            <p class="card-copy">Install, binary, image, and quick-start instructions aligned with the public compose flow.</p>
+            <p class="card-copy">Install and usage notes.</p>
             <span class="card-inline">public/README.md</span>
           </article>
           <article
@@ -946,7 +939,7 @@
               <img src="https://api.iconify.design/lucide:container.svg?color=%23f59e0b" width="24" height="24" alt="">
             </div>
             <h3 class="card-title">Public Compose</h3>
-            <p class="card-copy">Starts PostgreSQL 18 + Builder together and mounts your working directory into the runtime container.</p>
+            <p class="card-copy">Starts the public runtime stack.</p>
             <span class="card-inline">public/compose.yaml</span>
           </article>
           <article
@@ -960,7 +953,7 @@
               <img src="https://api.iconify.design/lucide:package-check.svg?color=%23a78bfa" width="24" height="24" alt="">
             </div>
             <h3 class="card-title">Releases and image</h3>
-            <p class="card-copy">GitHub Releases and the published Docker image remain the public delivery channel for the CLI itself.</p>
+            <p class="card-copy">Binary and image delivery channel.</p>
             <span class="card-inline">agnusdei1207/builder:latest</span>
           </article>
         </div>
@@ -972,10 +965,7 @@
             <span class="section-kicker">Quick start</span>
             <h2>Run Builder the public way</h2>
           </div>
-          <p>
-            Choose the path that matches how you want to operate Builder: the public compose stack,
-            a direct binary download, or the published Docker image.
-          </p>
+          <p>Compose, binary, or image. Pick the shortest path for your setup.</p>
         </div>
         <div class="command-grid">
           <article
@@ -995,7 +985,7 @@
               </button>
             </div>
             <h3 class="command-title">PostgreSQL + Builder</h3>
-            <p class="command-copy">Good default when you want the full public runtime stack with the published compose file.</p>
+            <p class="command-copy">Best default for the full stack.</p>
             <pre><code>curl -O https://raw.githubusercontent.com/agnusdei1207/builder/main/compose.yaml
 docker compose up -d
 
@@ -1019,7 +1009,7 @@ BUILDER_PROJECT_DIR=$(pwd) docker compose run builder</code></pre>
               </button>
             </div>
             <h3 class="command-title">Download the CLI</h3>
-            <p class="command-copy">Pull the latest public binary from GitHub Releases when you do not want the full compose stack.</p>
+            <p class="command-copy">Direct binary path.</p>
             <pre><code>curl -LO https://github.com/agnusdei1207/builder/releases/latest/download/builder-x86_64-unknown-linux-musl
 chmod +x builder-x86_64-unknown-linux-musl
 ./builder-x86_64-unknown-linux-musl --help</code></pre>
@@ -1042,7 +1032,7 @@ chmod +x builder-x86_64-unknown-linux-musl
               </button>
             </div>
             <h3 class="command-title">Use the published image</h3>
-            <p class="command-copy">Run Builder in a container without copying the public compose file into your project first.</p>
+            <p class="command-copy">Container-first path.</p>
             <pre><code>docker pull agnusdei1207/builder:latest
 docker run --rm -it -v "$(pwd):/workspace" -w /workspace agnusdei1207/builder:latest</code></pre>
           </article>
@@ -1056,7 +1046,7 @@ docker run --rm -it -v "$(pwd):/workspace" -w /workspace agnusdei1207/builder:la
       <div class="footer-panel">
         <div>
           <h3 class="card-title">Builder</h3>
-          <p class="footer-copy">Runtime-owned coding agent CLI with a public distribution shell and a PostgreSQL-backed operational model.</p>
+          <p class="footer-copy">Runtime-owned coding CLI. Public shell only.</p>
         </div>
         <div class="footer-links">
           <a class="footer-link" href="https://github.com/agnusdei1207/builder" target="_blank" rel="noopener">Repo</a>
